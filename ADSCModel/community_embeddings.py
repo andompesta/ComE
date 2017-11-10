@@ -39,6 +39,8 @@ class Community2Vec(object):
         model.inv_covariance_mat = self.g_mixture.precisions_.astype(np.float32)
         model.pi = self.g_mixture.predict_proba(model.node_embedding).astype(np.float32)
 
+        # model.c = self.g_mixture.degrees_of_freedom_.astype(np.float32)
+        # model.B = self.g_mixture.covariance_prior_.astype(np.float32)
 
     def loss(self, nodes, model, beta, chunksize=150):
         """
@@ -79,4 +81,4 @@ class Community2Vec(object):
 
             grad_input *= (beta/model.k)
 
-            model.node_embedding -= (grad_input.clip(min=-0.5, max=0.5)) * self.lr
+            model.node_embedding -= (grad_input.clip(min=-0.25, max=0.25)) * self.lr

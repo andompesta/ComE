@@ -45,7 +45,7 @@ if __name__ == "__main__":
     batch_size = 10
     window_size = 3    # windows size used to compute the context embedding
     negative = 5        # number of negative sample
-    lr = 0.04           # learning rate
+    lr = 0.025           # learning rate
 
     alpha_betas = [(1., 0.01)]
     down_sampling = 0.0

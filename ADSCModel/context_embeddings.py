@@ -128,8 +128,8 @@ class Context2Vec(object):
                 if job is None:  # data finished, exit
                     break
 
-                # lr = max(self.min_lr, self.lr * (1 - 1.0 * node_count[0]/total_nodes))
-                job_nodes = sum(train_o2(model.node_embedding, model.context_embedding, path, self.lr, self.negative, self.window_size, model.table,
+                lr = max(self.min_lr, self.lr * (1 - 1.0 * node_count[0]/total_nodes))
+                job_nodes = sum(train_o2(model.node_embedding, model.context_embedding, path, lr, self.negative, self.window_size, model.table,
                                              py_alpha=alpha, py_size=model.layer1_size, py_work=py_work) for path in job) #execute the sgd
 
                 with lock:

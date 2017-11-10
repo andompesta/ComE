@@ -1,8 +1,9 @@
 __author__ = 'ando'
 
 import networkx as nx
-from matplotlib import pyplot as plt
+import matplotlib.pyplot as plt
 import matplotlib as mpl
+import matplotlib.cm as cm
 
 from os.path import exists, join as path_join
 from os import makedirs
@@ -73,15 +74,16 @@ def graph_plot(G,
     norm_pos = np.linalg.norm(spring_pos_values, axis=1)
     nodes_color = nodes_color_fn(G, norm_pos)
 
+    plt.figure(figsize=(5, 5))
+    plt.axis("off")
+    nx.draw_networkx(G, node_color=nodes_color, pos=spring_pos, camp=plt.get_cmap(CAMP), nodelist=sorted(G.nodes()))
+
     if show:
-        plt.figure(figsize=(5, 5))
-        # plt.axis("off")
-        nx.draw_networkx(G,
-                         node_color=nodes_color,
-                         pos=spring_pos,
-                         camp=plt.get_cmap(CAMP),
-                         nodelist=sorted(G.nodes()),
-                         font_color="white")
+        plt.show()
+    else:
+        plt.clf()
+        plt.close()
+
     return nodes_color
 
 def node_space_plot_2D(embedding, color_values,
@@ -153,9 +155,9 @@ def node_space_plot_2D_elipsoid(embedding, color_values,
 
     if (means is not None) and (covariances is not None):
         for i, (mean, covar) in enumerate(zip(means, covariances)):
-            v, w = np.linalg.eigh(3.5*covar)
+            v, w = np.linalg.eigh(2.5*covar)
             v = 2. * np.sqrt(2.) * np.sqrt(v)
-            u = w[0] / np.linalg.norm(w[0], axis=0)
+            u = w[0] / np.linalg.norm(w[0])
             # as the DP will not use every component it has access to
             # unless it needs it, we shouldn't plot the redundant
             # components.

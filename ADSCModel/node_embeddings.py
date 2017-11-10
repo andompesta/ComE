@@ -88,8 +88,8 @@ class Node2Vec(object):
                     # print('thread %s break' % threading.current_thread().name)
                     break
 
-                # lr = max(self.min_lr, self.lr * (1 - 1.0 * node_count[0]/total_node))
-                job_words = sum(train_o1(model.node_embedding, edge, self.lr, self.negative, model.table,
+                lr = max(self.min_lr, self.lr * (1 - 1.0 * node_count[0]/total_node))
+                job_words = sum(train_o1(model.node_embedding, edge, lr, self.negative, model.table,
                                          py_size=model.layer1_size, py_work=py_work) for edge in job if edge is not None)
                 jobs.task_done()
                 lock.acquire(timeout=30)
