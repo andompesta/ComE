@@ -1,7 +1,7 @@
 __author__ = 'ando'
 import itertools
 import logging as log
-
+import math
 import numpy as np
 from scipy.special import expit as sigmoid
 
@@ -173,3 +173,9 @@ class Vocab(object):
     def __str__(self):
         vals = ['%s:%r' % (key, self.__dict__[key]) for key in sorted(self.__dict__) if not key.startswith('_')]
         return "<" + ', '.join(vals) + ">"
+
+
+def xavier_normal(size, as_type=np.float32, gain=1):
+    assert len(size) == 2
+    std = gain * math.sqrt(2.0 / sum(size))
+    return np.random.normal(size=size, loc=0, scale=std).astype(as_type)

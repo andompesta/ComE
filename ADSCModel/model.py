@@ -3,7 +3,7 @@ import numpy as np
 import pickle
 from os.path import exists, join as path_join
 from os import makedirs
-from utils.embedding import Vocab
+from utils.embedding import Vocab, xavier_normal
 from utils.IO_utils import load_ground_true
 import logging as log
 
@@ -83,8 +83,9 @@ class Model(object):
     def reset_weights(self):
         """Reset all projection weights to an initial (untrained) state, but keep the existing vocabulary."""
         np.random.seed(self.seed)
-        self.node_embedding = np.random.uniform(low=-0.5, high=0.5, size=(self.vocab_size, self.layer1_size)).astype(np.float32)
-        self.context_embedding = np.zeros((self.vocab_size, self.layer1_size), dtype=np.float32)
+        self.node_embedding = xavier_normal(size=(self.vocab_size, self.layer1_size), as_type=np.float32)
+        self.context_embedding = xavier_normal(size=(self.vocab_size, self.layer1_size), as_type=np.float32)
+
 
         self.centroid = np.zeros((self.k, self.layer1_size), dtype=np.float32)
         self.covariance_mat = np.zeros((self.k, self.layer1_size, self.layer1_size), dtype=np.float32)
