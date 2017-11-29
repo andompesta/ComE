@@ -35,32 +35,32 @@ if __name__ == "__main__":
 
     #Reading the input parameters form the configuration files
     number_walks = 10                       # number of walks for each node
-    walk_length = 20                        # length of each walk
-    representation_size = 2               # size of the embedding
+    walk_length = 80                        # length of each walk
+    representation_size = 128               # size of the embedding
     num_workers = 10                        # number of thread
     num_iter = 1                            # number of overall iteration
-    reg_covar = 0.001                    # regularization coefficient to ensure positive covar
-    input_file = 'Karate'                # name of the input file
-    output_file = 'Karate'               # name of the output file
-    batch_size = 10
-    window_size = 3    # windows size used to compute the context embedding
+    reg_covar = 0.00001                     # regularization coefficient to ensure positive covar
+    input_file = 'Dblp'                # name of the input file
+    output_file = 'Dblp'               # name of the output file
+    batch_size = 50
+    window_size = 10    # windows size used to compute the context embedding
     negative = 5        # number of negative sample
-    lr = 0.025           # learning rate
+    lr = 0.025            # learning rate
 
-    alpha_betas = [(1., 0.01)]
+    
+    alpha_betas = [(0.1, 0.1)]
     down_sampling = 0.0
 
-    k = 2
+    ks = [5]
     walks_filebase = os.path.join('data', output_file)            # where read/write the sampled path
 
 
 
     #CONSTRUCT THE GRAPH
-    G = graph_utils.load_adjacencylist(os.path.join('./data', input_file, input_file + '.adjlist'), undirected=True)
+    G = graph_utils.load_matfile(os.path.join('./data', input_file, input_file + '.mat'), undirected=True)
     # Sampling the random walks for context
     log.info("sampling the paths")
-    walk_files = graph_utils.write_walks_to_disk(G,
-                                                 os.path.join(walks_filebase, "{}.walks".format(output_file)),
+    walk_files = graph_utils.write_walks_to_disk(G, os.path.join(walks_filebase, "{}.walks".format(output_file)),
                                                  num_paths=number_walks,
                                                  path_length=walk_length,
                                                  alpha=0,
@@ -71,7 +71,7 @@ if __name__ == "__main__":
     model = Model(vertex_counts,
                   size=representation_size,
                   down_sampling=down_sampling,
-                  table_size=5000000,
+                  table_size=100000000,
                   input_file=os.path.join(input_file, input_file),
                   path_labels="./data")
 
@@ -100,53 +100,56 @@ if __name__ == "__main__":
     cont_learner.train(model,
                        paths=graph_utils.combine_files_iter(walk_files),
                        total_nodes=context_total_path,
-                       alpha=1.0,
+                       alpha=1,
                        chunksize=batch_size)
+    #
     model.save("{}_pre-training".format(output_file))
 
     ###########################
     #   EMBEDDING LEARNING    #
     ###########################
-    iter_node = 1
-    iter_com = 1
+    iter_node = floor(context_total_path/G.number_of_edges())
+    iter_com = floor(context_total_path/(G.number_of_edges()))
+    # iter_com = 1
     # alpha, beta = alpha_betas
 
-    for it in range(1):
+    for it in range(num_iter):
         for alpha, beta in alpha_betas:
-            log.info('\n_______________________________________\n')
-            log.info('\t\tITER-{}\n'.format(it))
-            log.info('using alpha:{}\tbeta:{}\titer_com:{}\titer_node: {}'.format(alpha, beta, iter_com, iter_node))
+            for k in ks:
+                log.info('\n_______________________________________\n')
+                log.info('\t\tITER-{}\n'.format(it))
+                model = model.load_model("{}_pre-training".format(output_file))
+                model.reset_communities_weights(k)
+                log.info('using alpha:{}\tbeta:{}\titer_com:{}\titer_node: {}'.format(alpha, beta, iter_com, iter_node))
+                start_time = timeit.default_timer()
 
-            start_time = timeit.default_timer()
+                com_learner.fit(model, reg_covar=reg_covar, n_init=10)
+                node_learner.train(model,
+                                   edges=edges,
+                                   iter=iter_node,
+                                   chunksize=batch_size)
 
-            node_learner.train(model,
-                               edges=edges,
-                               iter=iter_node,
-                               chunksize=batch_size)
+                
+                com_learner.train(G.nodes(), model, beta, chunksize=batch_size, iter=iter_com)
 
-
-
-            cont_learner.train(model,
-                               paths=graph_utils.combine_files_iter(walk_files),
-                               total_nodes=context_total_path,
-                               alpha=alpha,
-                               chunksize=batch_size)
-            com_learner.fit(model, reg_covar=reg_covar, n_init=10)
-            com_learner.train(G.nodes(), model, beta, chunksize=batch_size, iter=iter_com)
-
-            log.info('time: %.2fs' % (timeit.default_timer() - start_time))
-            node_color = plot_utils.graph_plot(G,
-                                               graph_name=input_file,
-                                               show=False)
-
-            plot_utils.node_space_plot_2D_elipsoid(model.node_embedding, node_color,
-                                                   means=model.centroid,
-                                                   covariances=model.covariance_mat,
-                                                   show=True)
+                cont_learner.train(model,
+                                   paths=graph_utils.combine_files_iter(walk_files),
+                                   total_nodes=context_total_path,
+                                   alpha=alpha,
+                                   chunksize=batch_size)
 
 
-            # io_utils.save_embedding(model.node_embedding, model.vocab,
-            #                         file_name="{}_alpha-{}_beta-".format(output_file,
-            #                                                              alpha,
-            #                                                              beta))
+                log.info('time: %.2fs' % (timeit.default_timer() - start_time))
+                # log.info(model.centroid)
+                io_utils.save_embedding(model.node_embedding, model.vocab,
+                                        file_name="{}_alpha-{}_beta-{}_ws-{}_neg-{}_lr-{}_icom-{}_ind-{}_k-{}_ds-{}".format(output_file,
+                                                                                                                       alpha,
+                                                                                                                       beta,
+                                                                                                                       window_size,
+                                                                                                                       negative,
+                                                                                                                       lr,
+                                                                                                                       iter_com,
+                                                                                                                       iter_node,
+                                                                                                                            model.k,
+                                                                                                                            down_sampling))
 
