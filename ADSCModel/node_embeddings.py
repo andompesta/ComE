@@ -1,7 +1,7 @@
 __author__ = 'ando'
 
 import logging as log
-log.basicConfig(format='%(asctime).19s %(levelname)s %(filename)s: %(lineno)s %(message)s', level=log.DEBUG)
+
 
 import time
 import threading
@@ -11,8 +11,9 @@ from utils.embedding import chunkize_serial, RepeatCorpusNTimes, prepare_sentenc
 from scipy.special import expit as sigmoid
 
 from utils.training_sdg_inner import train_o1, loss_o1, FAST_VERSION
-log.info("imported cython version: {}".format(FAST_VERSION))
 
+log.basicConfig(format='%(asctime).19s %(levelname)s %(filename)s: %(lineno)s %(message)s', level=log.DEBUG)
+log.info("imported cython version: {}".format(FAST_VERSION))
 
 
 class Node2Vec(object):
@@ -30,9 +31,10 @@ class Node2Vec(object):
             assert len(edge) == 2, "edges have to be done by 2 nodes :{}".format(edge)
             edge_loss = np.log(
                 sigmoid(np.dot(model.node_embedding[edge[1].index], model.node_embedding[edge[0].index].T)))
-            assert edge_loss <= 0,"malformed loss"
+            assert edge_loss <= 0, "malformed loss"
             ret_loss -= edge_loss
         return ret_loss
+
     #
     # def loss(self, model, edges):
     #     loss = 0.0
@@ -43,17 +45,13 @@ class Node2Vec(object):
     #         batch_work = np.zeros(model.layer1_size, dtype=np.float32)
     #
     #
-    #         batch_node = sum([loss_o1(model.node_embedding, edge, self.negative, model.table,
-    #                              py_size=model.layer1_size, py_loss=batch_loss, py_work=batch_work) for edge in job if edge is not None])
-    #         num_nodes += batch_node
-    #         loss += batch_loss[0]
-    #         # log.info("loss: {}\tnodes: {}".format(loss, num_nodes))
+    # batch_node = sum([loss_o1(model.node_embedding, edge, self.negative, model.table, py_size=model.layer1_size,
+    # py_loss=batch_loss, py_work=batch_work) for edge in job if edge is not None]) num_nodes += batch_node loss +=
+    # batch_loss[0] # log.info("loss: {}\tnodes: {}".format(loss, num_nodes))
     #
     #     log.info(num_nodes)
     #     log.info(loss)
     #     return loss
-
-
 
     def train(self, model, edges, chunksize=150, iter=1):
         """
@@ -62,7 +60,7 @@ class Node2Vec(object):
         assert model.node_embedding.dtype == np.float32
 
         log.info("O1 training model with %i workers on %i vocabulary and %i features and 'negative sampling'=%s" %
-                    (self.workers, len(model.vocab), model.layer1_size, self.negative))
+                 (self.workers, len(model.vocab), model.layer1_size, self.negative))
 
         if not model.vocab:
             raise RuntimeError("you must first build vocabulary before training the model")
@@ -72,10 +70,11 @@ class Node2Vec(object):
         log.debug('total edges: %d' % total_node)
         start, next_report, node_count = time.time(), [5.0], [0]
 
-        #int(sum(v.count * v.sample_probability for v in self.vocab.values()))
-        jobs = Queue(maxsize=2*self.workers)  # buffer ahead only a limited number of jobs.. this is the reason we can't simply use ThreadPool :(
+        # int(sum(v.count * v.sample_probability for v in self.vocab.values()))
+        jobs = Queue(
+            maxsize=2 * self.workers)  # buffer ahead only a limited number of jobs.. this is the reason we can't
+        # simply use ThreadPool :(
         lock = threading.Lock()
-
 
         def worker_train():
             """Train the model, lifting lists of paths from the jobs queue."""
@@ -88,9 +87,10 @@ class Node2Vec(object):
                     # print('thread %s break' % threading.current_thread().name)
                     break
 
-                lr = max(self.min_lr, self.lr * (1 - 1.0 * node_count[0]/total_node))
+                lr = max(self.min_lr, self.lr * (1 - 1.0 * node_count[0] / total_node))
                 job_words = sum(train_o1(model.node_embedding, edge, lr, self.negative, model.table,
-                                         py_size=model.layer1_size, py_work=py_work) for edge in job if edge is not None)
+                                         py_size=model.layer1_size, py_work=py_work) for edge in job if
+                                edge is not None)
                 jobs.task_done()
                 lock.acquire(timeout=30)
                 try:
@@ -99,23 +99,21 @@ class Node2Vec(object):
                     elapsed = time.time() - start
                     if elapsed >= next_report[0]:
                         log.info("PROGRESS: at %.2f%% \tnode_computed %d\talpha %.05f\t %.0f nodes/s" %
-                                    (100.0 * node_count[0] / total_node, node_count[0], lr, node_count[0] / elapsed if elapsed else 0.0))
-                        next_report[0] = elapsed + 5.0  # don't flood the log, wait at least a second between progress reports
+                                 (100.0 * node_count[0] / total_node, node_count[0], lr,
+                                  node_count[0] / elapsed if elapsed else 0.0))
+                        next_report[
+                            0] = elapsed + 5.0  # don't flood the log, wait at least a second between progress reports
                 finally:
                     lock.release()
 
-
-
-        workers = [threading.Thread(target=worker_train, name='thread_'+str(i)) for i in range(self.workers)]
+        workers = [threading.Thread(target=worker_train, name='thread_' + str(i)) for i in range(self.workers)]
         for thread in workers:
             thread.daemon = True  # make interrupting the process with ctrl+c easier
             thread.start()
 
-
         # convert input strings to Vocab objects (eliding OOV/downsampled words), and start filling the jobs queue
         for job_no, job in enumerate(chunkize_serial(prepare_sentences(model, edges), chunksize)):
             jobs.put(job)
-
 
         for _ in range(self.workers):
             jobs.put(None)  # give the workers heads up that they can finish -- no more work!
@@ -125,4 +123,4 @@ class Node2Vec(object):
 
         elapsed = time.time() - start
         log.info("training on %i words took %.1fs, %.0f words/s" %
-                    (node_count[0], elapsed, node_count[0]/ elapsed if elapsed else 0.0))
+                 (node_count[0], elapsed, node_count[0] / elapsed if elapsed else 0.0))

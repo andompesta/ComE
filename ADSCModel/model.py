@@ -11,9 +11,9 @@ log.basicConfig(format='%(asctime).19s %(levelname)s %(filename)s: %(lineno)s %(
 
 
 class Model(object):
-    '''
+    """
     class that keep track of all the parameters used during the learning of the embedding.
-    '''
+    """
 
     def __init__(self, nodes_degree=None,
                  size=2,
@@ -22,7 +22,7 @@ class Model(object):
                  table_size=100000000,
                  path_labels='data/',
                  input_file=None):
-        '''
+        """
         :param nodes_degree: Dict with node_id: degree of node
         :param size: projection space
         :param down_sampling: perform down_sampling of common node
@@ -31,7 +31,7 @@ class Model(object):
         :param path_labels: location of the file containing the ground true (label for each node)
         :param input_file: name of the file containing the ground true (label for each node)
         :return:
-        '''
+        """
 
         self.down_sampling = down_sampling
         self.seed = seed
@@ -43,7 +43,7 @@ class Model(object):
         if nodes_degree is not None:
             self.build_vocab_(nodes_degree)
             self.ground_true, self.k = load_ground_true(path=path_labels, file_name=input_file)
-            # inizialize node and context embeddings
+            # initialize node and context embeddings
             self.make_table()
             self.precalc_sampling()
             self.reset_weights()
@@ -67,9 +67,9 @@ class Model(object):
         log.info("total {} nodes".format(self.vocab_size))
 
     def precalc_sampling(self):
-        '''
+        """
             Peach vocabulary item's threshold for sampling
-        '''
+        """
 
         if self.down_sampling:
             log.info("frequent-node down sampling, threshold %g; progress tallies will be approximate" % (self.down_sampling))

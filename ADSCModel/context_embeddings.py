@@ -20,9 +20,9 @@ except ImportError as e:
 
 
 class Context2Vec(object):
-    '''
+    """
     Class that train the context embedding
-    '''
+    """
     def __init__(self, lr=0.1, window_size=5, workers=1, negative=5):
         '''
         :param lr: learning rate
