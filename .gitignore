@@ -213,3 +213,4 @@ fabric.properties
 
 ### manual ###
 .DS_STORE
+/data
