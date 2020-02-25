@@ -11,3 +11,11 @@ The core algorithm is only written in Cython, so we provide a miniconda environm
 ## GMM => BGMM progress:
 
 Not started.
+
+## next up
+
+Did `conda update --all` =>
+- save new env.yml
+- get main.py to run
+- fix graph_utils due to networkx update
+- run on karate club data (get directly from networkx example data)
