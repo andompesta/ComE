@@ -1,4 +1,5 @@
 __author__ = 'ando'
+
 import numpy as np
 import pickle
 from os.path import exists, join as path_join
@@ -72,7 +73,8 @@ class Model(object):
         """
 
         if self.down_sampling:
-            log.info("frequent-node down sampling, threshold %g; progress tallies will be approximate" % (self.down_sampling))
+            log.info("frequent-node down sampling, threshold %g; progress tallies will be approximate" % (
+                self.down_sampling))
             total_nodes = sum(v.count for v in self.vocab.values())
             threshold_count = float(self.down_sampling) * total_nodes
 
@@ -85,7 +87,6 @@ class Model(object):
         np.random.seed(self.seed)
         self.node_embedding = xavier_normal(size=(self.vocab_size, self.layer1_size), as_type=np.float32)
         self.context_embedding = xavier_normal(size=(self.vocab_size, self.layer1_size), as_type=np.float32)
-
 
         self.centroid = np.zeros((self.k, self.layer1_size), dtype=np.float32)
         self.covariance_mat = np.zeros((self.k, self.layer1_size, self.layer1_size), dtype=np.float32)
@@ -102,12 +103,12 @@ class Model(object):
         self.pi = np.zeros((self.vocab_size, self.k), dtype=np.float32)
         log.info("reset communities data| k: {}".format(self.k))
 
-
     def reset_weight_random(self):
         """Reset all projection weights to an initial (untrained) state, but keep the existing vocabulary."""
         self.node_embedding = np.random.uniform(low=-4.5, high=4.5, size=(self.vocab_size, self.layer1_size)).astype(
             np.float32)
-        self.context_embedding = np.random.uniform(low=-4.5, high=4.5, size=(self.vocab_size, self.layer1_size)).astype(np.float32)
+        self.context_embedding = np.random.uniform(low=-4.5, high=4.5, size=(self.vocab_size, self.layer1_size)).astype(
+            np.float32)
 
         self.centroid = np.zeros((self.k, self.layer1_size), dtype=np.float32)
         self.covariance_mat = np.zeros((self.k, self.layer1_size, self.layer1_size), dtype=np.float32)
@@ -135,17 +136,18 @@ class Model(object):
         Called internally from `build_vocab()`.
 
         """
-        log.info("constructing a table with noise distribution from {} words of size {}".format(self.vocab_size, self.table_size))
+        log.info("constructing a table with noise distribution from {} words of size {}".format(self.vocab_size,
+                                                                                                self.table_size))
         # table (= list of words) of noise distribution for negative sampling
         self.table = np.zeros(self.table_size, dtype=np.uint32)
         sorted_keys = sorted(self.vocab.keys())
         k_idx = 0
         # compute sum of all power (Z in paper)
-        train_words_pow = float(sum([self.vocab[word].count**power for word in self.vocab]))
+        train_words_pow = float(sum([self.vocab[word].count ** power for word in self.vocab]))
         # go through the whole table and fill it up with the word indexes proportional to a word's count**power
         node_idx = sorted_keys[k_idx]
         # normalize count^0.75 by Z
-        d1 = self.vocab[node_idx].count**power / train_words_pow
+        d1 = self.vocab[node_idx].count ** power / train_words_pow
         for tidx in range(self.table_size):
             self.table[tidx] = self.vocab[node_idx].index
             if 1.0 * tidx / self.table_size > d1:
@@ -153,11 +155,9 @@ class Model(object):
                 if k_idx > sorted_keys[-1]:
                     k_idx = sorted_keys[-1]
                 node_idx = sorted_keys[k_idx]
-                d1 += self.vocab[node_idx].count**power / train_words_pow
+                d1 += self.vocab[node_idx].count ** power / train_words_pow
 
         log.info('Max value in the negative sampling table: {}'.format(max(self.table)))
-
-
 
     def save(self, file_name, path='data'):
         if not exists(path):
@@ -172,5 +172,5 @@ class Model(object):
             model = Model()
             model.__dict__ = pickle.load(file)
             log.info('model loaded , size: %d \t table_size: %d \t down_sampling: %.5f \t communities %d' %
-                  (model.layer1_size, model.table_size, model.down_sampling, model.k))
+                     (model.layer1_size, model.table_size, model.down_sampling, model.k))
             return model
