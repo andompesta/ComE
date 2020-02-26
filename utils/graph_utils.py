@@ -34,9 +34,9 @@ def __random_walk__(G, path_length, start, alpha=0, rand=random.Random()):
 
     while len(path) < path_length:
         cur = path[-1]
-        if len(G.neighbors(cur)) > 0:
+        if G.degree[cur] > 0:
             if rand.random() >= alpha:
-                path.append(rand.choice(G.neighbors(cur)))
+                path.append(rand.choice(list(G.neighbors(cur))))
             else:
                 path.append(path[0])
         else:
