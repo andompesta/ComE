@@ -149,6 +149,7 @@ if __name__ == "__main__":
                                             model.k,
                                             down_sampling))
 
+
 # ### write predictions to labels_pred.txt
 
 # save com_learner.g_mixture to file
