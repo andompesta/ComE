@@ -54,7 +54,7 @@ if __name__ == "__main__":
     walks_filebase = os.path.join('data', output_file)  # where read/write the sampled path
 
     # CONSTRUCT THE GRAPH
-    #G = graph_utils.load_matfile(os.path.join('./data', input_file, input_file + '.mat'), undirected=True)
+    # G = graph_utils.load_matfile(os.path.join('./data', input_file, input_file + '.mat'), undirected=True)
     G = nx.karate_club_graph()  # DEBUG run on karate club graph
 
     # Sampling the random walks for context
