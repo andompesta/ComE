@@ -166,4 +166,4 @@ np.savetxt('./data/labels_pred.txt', labels_pred)
 # ### plot stuff
 
 # graph_plot
-plot_utils.graph_plot(G, input_file)
+plot_utils.graph_plot(G, input_file, node_position_file=False)
