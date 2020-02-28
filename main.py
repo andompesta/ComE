@@ -162,3 +162,8 @@ joblib.dump(com_learner.g_mixture, './data/g_mixture.joblib')
 labels_pred = np.array(com_learner.g_mixture.predict(model.node_embedding)).astype(int)
 np.savetxt('./data/labels_pred.txt', labels_pred)
 
+
+# ### plot stuff
+
+# graph_plot
+plot_utils.graph_plot(G, input_file)
