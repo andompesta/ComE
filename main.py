@@ -34,7 +34,7 @@ if __name__ == "__main__":
     # Reading the input parameters form the configuration files
     number_walks = 10  # number of walks for each node
     walk_length = 80  # length of each walk
-    representation_size = 128  # size of the embedding
+    representation_size = 2  # size of the embedding
     num_workers = 10  # number of thread
     num_iter = 1  # number of overall iteration
     reg_covar = 0.00001  # regularization coefficient to ensure positive covar
@@ -44,6 +44,7 @@ if __name__ == "__main__":
     window_size = 10  # windows size used to compute the context embedding
     negative = 5  # number of negative sample
     lr = 0.025  # learning rate
+    k = 2  # number of communities to initialize the BGMM with
 
     alpha_betas = [(0.1, 0.1)]
     down_sampling = 0.0
@@ -53,7 +54,7 @@ if __name__ == "__main__":
 
     # CONSTRUCT THE GRAPH
     #G = graph_utils.load_matfile(os.path.join('./data', input_file, input_file + '.mat'), undirected=True)
-    G = nx.karate_club_graph()
+    G = nx.karate_club_graph()  # DEBUG run on karate club graph
 
     # Sampling the random walks for context
     log.info("sampling the paths")
@@ -69,7 +70,7 @@ if __name__ == "__main__":
                   size=representation_size,
                   down_sampling=down_sampling,
                   table_size=100000000,
-                  input_file=os.path.join(input_file, input_file),
+                  k=k,
                   path_labels="./data")
 
     # Learning algorithm
