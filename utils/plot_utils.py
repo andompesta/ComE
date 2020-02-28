@@ -11,7 +11,6 @@ import numpy as np
 import itertools
 import pickle
 
-
 CAMP = 'viridis'
 
 
@@ -28,13 +27,13 @@ def _pos_coloring(G, norm_pos):
 
     nodes_order = sorted(nodes_order, key=lambda x: x[1])
 
-
     color_map = list(plt.get_cmap(CAMP)(np.linspace(0.0, 1, G.number_of_nodes())))
     nodes_color = np.zeros((G.number_of_nodes(), 4))
 
     for color_index, (node_id, norm_value) in enumerate(nodes_order):
         nodes_color[node_id - 1] = color_map[color_index]
     return nodes_color
+
 
 def _binary_commonity(G, label):
     '''
@@ -63,7 +62,6 @@ def graph_plot(G,
                node_position_path="./data",
                node_position_file=True,
                show=True):
-
     if node_position_file:
         spring_pos = pickle.load(open(path_join(node_position_path, graph_name, 'node_pos.bin'), "rb"))
     else:
@@ -86,17 +84,17 @@ def graph_plot(G,
 
     return nodes_color
 
-def node_space_plot_2D(embedding, color_values,
+
+def node_space_plot_2d(embedding, labels,
                        path="graph", graph_name='graph',
                        save=True,
                        grid=False):
-
     fig = plt.figure(figsize=(5, 5))
     ax = fig.add_subplot(111)
     nodes_id = np.array(list(range(1, len(embedding) + 1)))
     data = np.concatenate((embedding, np.expand_dims(nodes_id, axis=1),), axis=1)
 
-    plt.scatter(data[:, 0], data[:, 1], color=color_values, marker='o', cmap=CAMP)
+    plt.scatter(data[:, 0], data[:, 1], c=labels, marker='o', cmap=CAMP)
 
     for node in data:
         ax.text(node[0], node[1], '%s' % (str(int(node[2]))), size=10)
@@ -111,11 +109,11 @@ def node_space_plot_2D(embedding, color_values,
         plt.xlim([x_min, x_max])
         plt.ylim([y_min, y_max])
 
-        x_major_ticks = np.arange(x_min, x_max+0.01, 2*x_step)
-        x_minor_ticks = np.arange(x_min, x_max+0.01, x_step)
+        x_major_ticks = np.arange(x_min, x_max + 0.01, 2 * x_step)
+        x_minor_ticks = np.arange(x_min, x_max + 0.01, x_step)
 
-        y_major_ticks = np.arange(y_min, y_max+0.001, 2*y_step)
-        y_minor_ticks = np.arange(y_min, y_max+0.001, y_step)
+        y_major_ticks = np.arange(y_min, y_max + 0.001, 2 * y_step)
+        y_minor_ticks = np.arange(y_min, y_max + 0.001, y_step)
 
         ax.set_xticks(x_major_ticks)
         ax.set_xticks(x_minor_ticks, minor=True)
@@ -134,8 +132,7 @@ def node_space_plot_2D(embedding, color_values,
         plt.show()
 
 
-
-def node_space_plot_2D_elipsoid(embedding, color_values,
+def node_space_plot_2d_elipsoid(embedding, color_values,
                                 means=None,
                                 covariances=None,
                                 grid=False,
@@ -144,18 +141,17 @@ def node_space_plot_2D_elipsoid(embedding, color_values,
                                 show=False):
     fig = plt.figure(figsize=(5, 5))
     ax = fig.add_subplot(111)
-    nodes_id = np.array(list(range(1, len(embedding)+1)))
-    data = np.concatenate((embedding, np.expand_dims(nodes_id, axis=1), ), axis=1)
+    nodes_id = np.array(list(range(1, len(embedding) + 1)))
+    data = np.concatenate((embedding, np.expand_dims(nodes_id, axis=1),), axis=1)
 
-    plt.scatter(data[:,0], data[:,1], color=color_values, marker='o', cmap=CAMP)
+    plt.scatter(data[:, 0], data[:, 1], color=color_values, marker='o', cmap=CAMP)
 
     for node in data:
-        ax.text(node[0], node[1],  '%s' % (str(int(node[2]))), size=10)
-
+        ax.text(node[0], node[1], '%s' % (str(int(node[2]))), size=10)
 
     if (means is not None) and (covariances is not None):
         for i, (mean, covar) in enumerate(zip(means, covariances)):
-            v, w = np.linalg.eigh(2.5*covar)
+            v, w = np.linalg.eigh(2.5 * covar)
             v = 2. * np.sqrt(2.) * np.sqrt(v)
             u = w[0] / np.linalg.norm(w[0])
             # as the DP will not use every component it has access to
@@ -171,9 +167,6 @@ def node_space_plot_2D_elipsoid(embedding, color_values,
             ell.set_alpha(transparency)
             ax.add_artist(ell)
 
-
-
-
     if grid:
         x_max, x_min = 0.5, -1
         y_max, y_min = 2, -2
@@ -184,11 +177,11 @@ def node_space_plot_2D_elipsoid(embedding, color_values,
         plt.xlim([x_min, x_max])
         plt.ylim([y_min, y_max])
 
-        x_major_ticks = np.arange(x_min, x_max+0.01, 2*x_step)
-        x_minor_ticks = np.arange(x_min, x_max+0.01, x_step)
+        x_major_ticks = np.arange(x_min, x_max + 0.01, 2 * x_step)
+        x_minor_ticks = np.arange(x_min, x_max + 0.01, x_step)
 
-        y_major_ticks = np.arange(y_min, y_max+0.001, 2*y_step)
-        y_minor_ticks = np.arange(y_min, y_max+0.001, y_step)
+        y_major_ticks = np.arange(y_min, y_max + 0.001, 2 * y_step)
+        y_minor_ticks = np.arange(y_min, y_max + 0.001, y_step)
 
         ax.set_xticks(x_major_ticks)
         ax.set_xticks(x_minor_ticks, minor=True)
@@ -201,7 +194,7 @@ def node_space_plot_2D_elipsoid(embedding, color_values,
     if plot_name:
         if not exists(path):
             makedirs(path)
-        plt.savefig(path_join(path, plot_name+'.png'))
+        plt.savefig(path_join(path, plot_name + '.png'))
 
     if show:
         plt.show()
