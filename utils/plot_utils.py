@@ -87,7 +87,7 @@ def graph_plot(G,
 
 def node_space_plot_2d(embedding, labels,
                        path="graph", graph_name='graph',
-                       save=True,
+                       save=False,
                        grid=False):
     fig = plt.figure(figsize=(5, 5))
     ax = fig.add_subplot(111)
@@ -138,7 +138,7 @@ def node_space_plot_2d_elipsoid(embedding, color_values,
                                 grid=False,
                                 path='./graph',
                                 plot_name=None,
-                                show=False):
+                                show=True):
     fig = plt.figure(figsize=(5, 5))
     ax = fig.add_subplot(111)
     nodes_id = np.array(list(range(1, len(embedding) + 1)))
