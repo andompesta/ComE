@@ -4,6 +4,7 @@ import os
 import random
 from multiprocessing import cpu_count
 import logging as log
+import joblib
 
 import numpy as np
 import psutil
@@ -147,3 +148,17 @@ if __name__ == "__main__":
                                             iter_node,
                                             model.k,
                                             down_sampling))
+
+# ### write predictions to labels_pred.txt
+
+# using model.pi
+# labels_pred = np.array(model.pi)
+# np.savetxt('./data/labels_pred.txt', labels_pred
+
+# save com_learner.g_mixture to file
+joblib.dump(com_learner.g_mixture, './data/g_mixture.joblib')
+
+# using predictions from com_learner.g_mixture with node_embeddings
+labels_pred = np.array(com_learner.g_mixture.predict(model.node_embedding)).astype(int)
+np.savetxt('./data/labels_pred.txt', labels_pred)
+
