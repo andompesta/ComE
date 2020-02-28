@@ -151,10 +151,6 @@ if __name__ == "__main__":
 
 # ### write predictions to labels_pred.txt
 
-# using model.pi
-# labels_pred = np.array(model.pi)
-# np.savetxt('./data/labels_pred.txt', labels_pred
-
 # save com_learner.g_mixture to file
 joblib.dump(com_learner.g_mixture, './data/g_mixture.joblib')
 
