@@ -14,27 +14,6 @@ import pickle
 CAMP = 'viridis'
 
 
-def _pos_coloring(G, norm_pos):
-    '''
-    Coloring function based on the position of the nodes
-    :param G: Graph
-    :param norm_pos: diict -> node_id: 2d node position
-    :return: Color for each node
-    '''
-    nodes_order = []
-    for node_id, value in zip(G.nodes(), norm_pos):
-        nodes_order.append((node_id, value))
-
-    nodes_order = sorted(nodes_order, key=lambda x: x[1])
-
-    color_map = list(plt.get_cmap(CAMP)(np.linspace(0.0, 1, G.number_of_nodes())))
-    nodes_color = np.zeros((G.number_of_nodes(), 4))
-
-    for color_index, (node_id, norm_value) in enumerate(nodes_order):
-        nodes_color[node_id - 1] = color_map[color_index]
-    return nodes_color
-
-
 def _binary_commonity(G, label):
     '''
     Coloring function based on the label
@@ -57,24 +36,12 @@ def _binary_commonity(G, label):
 
 
 def graph_plot(G,
-               graph_name,
-               nodes_color_fn=_pos_coloring,
-               node_position_path="./data",
-               node_position_file=True,
+               labels=None,
                show=True):
-    if node_position_file:
-        spring_pos = pickle.load(open(path_join(node_position_path, graph_name, 'node_pos.bin'), "rb"))
-    else:
-        spring_pos = nx.spring_layout(G)
-        pickle.dump(spring_pos, open(path_join(node_position_path, graph_name, 'node_pos.bin'), "wb"))
-
-    spring_pos_values = np.array(list(spring_pos.values()))
-    norm_pos = np.linalg.norm(spring_pos_values, axis=1)
-    nodes_color = nodes_color_fn(G, norm_pos)
-
+    spring_pos = nx.spring_layout(G)
     plt.figure(figsize=(5, 5))
     plt.axis("off")
-    nx.draw_networkx(G, node_color=nodes_color, pos=spring_pos, camp=plt.get_cmap(CAMP), nodelist=sorted(G.nodes()))
+    nx.draw_networkx(G, node_color=labels, pos=spring_pos, camp=plt.get_cmap(CAMP), nodelist=sorted(G.nodes()))
 
     if show:
         plt.show()
