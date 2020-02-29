@@ -27,8 +27,6 @@ class Model(object):
         :param down_sampling: perform down_sampling of common node
         :param seed: seed for random function
         :param table_size: size of the negative table to generate
-        :param k: number of communities to initialize the BGMM with
-        :param path_labels: location of the file containing the ground true (label for each node)
         :return:
         """
 
@@ -41,7 +39,7 @@ class Model(object):
 
         if nodes_degree is not None:
             self.build_vocab_(nodes_degree)
-            self.k = 0
+            self.k = None
             # initialize node and context embeddings
             self.make_table()
             self.precalc_sampling()
