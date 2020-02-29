@@ -50,7 +50,7 @@ if __name__ == "__main__":
     alpha_betas = [(0.1, 0.1)]
     down_sampling = 0.0
 
-    ks = [5]
+    ks = [2]
     walks_filebase = os.path.join('data', output_file)  # where read/write the sampled path
 
     # CONSTRUCT THE GRAPH
