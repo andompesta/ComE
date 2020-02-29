@@ -20,9 +20,7 @@ class Model(object):
                  size=2,
                  down_sampling=0,
                  seed=1,
-                 table_size=100000000,
-                 k=2,
-                 path_labels='data/'):
+                 table_size=100000000):
         """
         :param nodes_degree: Dict with node_id: degree of node
         :param size: projection space
@@ -43,7 +41,7 @@ class Model(object):
 
         if nodes_degree is not None:
             self.build_vocab_(nodes_degree)
-            self.k = k
+            self.k = 0
             # initialize node and context embeddings
             self.make_table()
             self.precalc_sampling()

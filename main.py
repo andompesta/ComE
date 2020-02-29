@@ -45,12 +45,10 @@ if __name__ == "__main__":
     window_size = 10  # windows size used to compute the context embedding
     negative = 5  # number of negative sample
     lr = 0.025  # learning rate
-    k = 2  # number of communities to initialize the BGMM with
-
     alpha_betas = [(0.1, 0.1)]
     down_sampling = 0.0
 
-    ks = [2]
+    ks = [2]  # number of communities to initialize the BGMM with
     walks_filebase = os.path.join('data', output_file)  # where read/write the sampled path
 
     # CONSTRUCT THE GRAPH
@@ -70,9 +68,7 @@ if __name__ == "__main__":
     model = Model(vertex_counts,
                   size=representation_size,
                   down_sampling=down_sampling,
-                  table_size=100000000,
-                  k=k,
-                  path_labels="./data")
+                  table_size=100000000)
 
     # Learning algorithm
     node_learner = Node2Vec(workers=num_workers, negative=negative, lr=lr)
