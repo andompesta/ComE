@@ -161,7 +161,7 @@ np.savetxt('./data/labels_pred.txt', labels_pred)
 # ### plot stuff
 
 # graph_plot
-plot_utils.graph_plot(G, input_file, node_position_file=False)
+plot_utils.graph_plot(G, labels=labels_pred)
 
 # node_space_plot_2D
 plot_utils.node_space_plot_2d(model.node_embedding, labels_pred)
