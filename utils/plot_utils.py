@@ -49,11 +49,11 @@ def graph_plot(G,
         plt.clf()
         plt.close()
 
-    return nodes_color
 
-
-def node_space_plot_2d(embedding, labels,
-                       path="graph", graph_name='graph',
+def node_space_plot_2d(embedding,
+                       labels=None,
+                       path="graph",
+                       graph_name='graph',
                        save=False,
                        grid=False):
     fig = plt.figure(figsize=(5, 5))
@@ -99,13 +99,14 @@ def node_space_plot_2d(embedding, labels,
         plt.show()
 
 
-def node_space_plot_2d_ellipsoid(embedding, labels,
-                                means=None,
-                                covariances=None,
-                                grid=False,
-                                path='./graph',
-                                plot_name=None,
-                                show=True):
+def node_space_plot_2d_ellipsoid(embedding,
+                                 labels=None,
+                                 means=None,
+                                 covariances=None,
+                                 grid=False,
+                                 path='./graph',
+                                 plot_name=None,
+                                 show=True):
     fig = plt.figure(figsize=(5, 5))
     ax = fig.add_subplot(111)
     nodes_id = np.array(list(range(1, len(embedding) + 1)))

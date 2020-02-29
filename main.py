@@ -164,10 +164,10 @@ np.savetxt('./data/labels_pred.txt', labels_pred)
 plot_utils.graph_plot(G, labels=labels_pred)
 
 # node_space_plot_2D
-plot_utils.node_space_plot_2d(model.node_embedding, labels_pred)
+plot_utils.node_space_plot_2d(model.node_embedding, labels=labels_pred)
 
 # node_space_plot_2d_ellipsoid
 plot_utils.node_space_plot_2d_ellipsoid(model.node_embedding,
-                                        labels_pred,
+                                        labels=labels_pred,
                                         means=com_learner.g_mixture.means_,
                                         covariances=com_learner.g_mixture.covariances_)
