@@ -17,10 +17,12 @@ class Community2Vec(object):
         self.lr = lr
 
     def fit(self, model, reg_covar=0, n_init=10):
-        '''
+        """
         Fit the GMM model with the current node embedding and save the result in the model
         :param model: model injected to add the mixture parameters
-        '''
+        :param reg_covar: non-negative regularization added to the diagonal of covariance
+        :param n_init: number of initializations to perform
+        """
         self.g_mixture = mixture.GaussianMixture(n_components=model.k,
                                                  reg_covar=reg_covar,
                                                  covariance_type='full',
@@ -45,9 +47,10 @@ class Community2Vec(object):
     def loss(self, nodes, model, beta, chunksize=150):
         """
         Forward function used to compute o3 loss
-        :param input_labels: of the node present in the batch
+        :param nodes:
         :param model: model containing all the shared data
         :param beta: trade off param
+        :param chunksize:
         """
         ret_loss = 0
         for node_index in chunkize_serial(map(lambda x: model.vocab[x].index, nodes), chunksize):
@@ -64,6 +67,13 @@ class Community2Vec(object):
         return ret_loss * (beta/model.k)
 
     def train(self, nodes, model, beta, chunksize=150, iter=1):
+        """
+        :param nodes:
+        :param model: model containing all the shared data
+        :param beta: trade off param
+        :param chunksize:
+        :param iter:
+        """
         for _ in range(iter):
             grad_input = np.zeros(model.node_embedding.shape).astype(np.float32)
             for node_index in chunkize_serial(map(lambda node: model.vocab[node].index,
