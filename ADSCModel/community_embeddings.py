@@ -23,10 +23,11 @@ class Community2Vec(object):
         :param reg_covar: non-negative regularization added to the diagonal of covariance
         :param n_init: number of initializations to perform
         """
-        self.g_mixture = mixture.GaussianMixture(n_components=model.k,
-                                                 reg_covar=reg_covar,
-                                                 covariance_type='full',
-                                                 n_init=n_init)
+        self.g_mixture = mixture.BayesianGaussianMixture(n_components=model.k,
+                                                         weight_concentration_prior=None,  # default: 1/n_components
+                                                         reg_covar=reg_covar,
+                                                         covariance_type='full',
+                                                         n_init=n_init)
 
         log.info("Fitting: {} communities".format(model.k))
         self.g_mixture.fit(model.node_embedding)
