@@ -172,4 +172,4 @@ def node_space_plot_2d_ellipsoid(embedding,
 
 
 def bar_plot_bgmm_weights(weights):
-    plt.bar(range(weights), weights)
+    plt.bar(np.arange(len(weights)), weights)
