@@ -3,13 +3,10 @@ __author__ = 'ando'
 import networkx as nx
 import matplotlib.pyplot as plt
 import matplotlib as mpl
-import matplotlib.cm as cm
 
 from os.path import exists, join as path_join
 from os import makedirs
 import numpy as np
-import itertools
-import pickle
 
 CAMP = 'viridis'
 
