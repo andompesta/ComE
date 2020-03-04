@@ -47,8 +47,9 @@ if __name__ == "__main__":
     lr = 0.025  # learning rate
     alpha_betas = [(0.1, 0.1)]
     down_sampling = 0.0
+    weight_concentration_prior = 1e-6  # dirichlet concentration of each BGMM component to (de)activate components
 
-    ks = [2]  # number of communities to initialize the BGMM with
+    ks = [15]  # number of communities to initialize the BGMM with
     walks_filebase = os.path.join('data', output_file)  # where read/write the sampled path
 
     # CONSTRUCT THE GRAPH
@@ -116,7 +117,10 @@ if __name__ == "__main__":
                 log.info('using alpha:{}\tbeta:{}\titer_com:{}\titer_node: {}'.format(alpha, beta, iter_com, iter_node))
                 start_time = timeit.default_timer()
 
-                com_learner.fit(model, reg_covar=reg_covar, n_init=10)
+                com_learner.fit(model,
+                                weight_concentration_prior=weight_concentration_prior,
+                                reg_covar=reg_covar,
+                                n_init=10)
                 node_learner.train(model,
                                    edges=edges,
                                    iter=iter_node,
@@ -155,6 +159,9 @@ labels_pred = np.array(com_learner.g_mixture.predict(model.node_embedding)).asty
 np.savetxt('./data/labels_pred.txt', labels_pred)
 
 # ### plot stuff
+
+# bar_plot_bgmm_pi
+plot_utils.bar_plot_bgmm_weights(com_learner.g_mixture.weights_)
 
 # graph_plot
 plot_utils.graph_plot(G, labels=labels_pred)
