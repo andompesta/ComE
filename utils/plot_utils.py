@@ -169,3 +169,7 @@ def node_space_plot_2d_ellipsoid(embedding,
 
     plt.clf()
     plt.close()
+
+
+def bar_plot_bgmm_weights(pi):
+    plt.bar(pi)
