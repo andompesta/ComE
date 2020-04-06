@@ -116,12 +116,16 @@ def node_space_plot_2d_ellipsoid(embedding,
 
     if (means is not None) and (covariances is not None):
         for i, (mean, covar) in enumerate(zip(means, covariances)):
-            v, w = np.linalg.eigh(2.5 * covar)
-            v = 2. * np.sqrt(2.) * np.sqrt(v)
-            u = w[0] / np.linalg.norm(w[0])
             # as the DP will not use every component it has access to
             # unless it needs it, we shouldn't plot the redundant
             # components.
+            if not np.any(labels == i):
+                continue
+            # computations for showing ellipses
+            v, w = np.linalg.eigh(2.5 * covar)
+            v = 2. * np.sqrt(2.) * np.sqrt(v)
+            u = w[0] / np.linalg.norm(w[0])
+
             transparency = 0.45
 
             # Plot an ellipse to show the Gaussian component
