@@ -55,7 +55,7 @@ def node_space_plot_2d(embedding,
                        grid=False):
     fig = plt.figure(figsize=(5, 5))
     ax = fig.add_subplot(111)
-    nodes_id = np.array(list(range(1, len(embedding) + 1)))
+    nodes_id = np.array(list(range(len(embedding))))
     data = np.concatenate((embedding, np.expand_dims(nodes_id, axis=1),), axis=1)
 
     plt.scatter(data[:, 0], data[:, 1], c=labels, marker='o', cmap=CAMP)
