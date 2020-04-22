@@ -1,4 +1,5 @@
 __author__ = 'ando'
+
 import sklearn.mixture as mixture
 import numpy as np
 from utils.embedding import chunkize_serial
@@ -13,22 +14,38 @@ class Community2Vec(object):
     """
     Class that train the community embedding
     """
+
     def __init__(self, lr):
         self.lr = lr
+        self.g_mixture = None
 
-    def fit(self, model, weight_concentration_prior=None, reg_covar=0, n_init=10):
+    def fit(self, model, mixture_type="GMM", reg_covar=0, n_init=10, weight_concentration_prior=None):
         """
         Fit the GMM model with the current node embedding and save the result in the model
         :param model: model injected to add the mixture parameters
-        :param weight_concentration_prior: dirichlet concentration of each component (gamma). default: 1/n_components
+        :param mixture_type: Gaussian Mixture Model (GMM, default) or Bayesian Gaussian Mixture Model (BGMM)
         :param reg_covar: non-negative regularization added to the diagonal of covariance
         :param n_init: number of initializations to perform
+        :param weight_concentration_prior: dirichlet concentration of each component (gamma). default: 1/n_components
         """
-        self.g_mixture = mixture.BayesianGaussianMixture(n_components=model.k,
-                                                         weight_concentration_prior=weight_concentration_prior,
-                                                         reg_covar=reg_covar,
-                                                         covariance_type='full',
-                                                         n_init=n_init)
+        if mixture_type == "BGMM":
+            self.g_mixture = mixture.BayesianGaussianMixture(n_components=model.k,
+                                                             weight_concentration_prior=weight_concentration_prior,
+                                                             reg_covar=reg_covar,
+                                                             covariance_type='full',
+                                                             n_init=n_init)
+        elif mixture_type == "GMM":
+            self.g_mixture = mixture.GaussianMixture(n_components=model.k,
+                                                     reg_covar=reg_covar,
+                                                     covariance_type='full',
+                                                     n_init=n_init)
+        else:
+            print("Unknown mixture_type: ", mixture_type)
+            print("Using GMM for community embeddings")
+            self.g_mixture = mixture.GaussianMixture(n_components=model.k,
+                                                     reg_covar=reg_covar,
+                                                     covariance_type='full',
+                                                     n_init=n_init)
 
         log.info("Fitting: {} communities".format(model.k))
         self.g_mixture.fit(model.node_embedding)
@@ -66,7 +83,7 @@ class Community2Vec(object):
 
             ret_loss = abs(batch_loss.sum())
 
-        return ret_loss * (beta/model.k)
+        return ret_loss * (beta / model.k)
 
     def train(self, nodes, model, beta, chunksize=150, iter=1):
         """
@@ -79,7 +96,10 @@ class Community2Vec(object):
         for _ in range(iter):
             grad_input = np.zeros(model.node_embedding.shape).astype(np.float32)
             for node_index in chunkize_serial(map(lambda node: model.vocab[node].index,
-                                                  filter(lambda node: node in model.vocab and (model.vocab[node].sample_probability >= 1.0 or model.vocab[node].sample_probability >= np.random.random_sample()), nodes)), chunksize):
+                                                  filter(lambda node: node in model.vocab and (
+                                                          model.vocab[node].sample_probability >= 1.0 or model.vocab[
+                                                      node].sample_probability >= np.random.random_sample()), nodes)),
+                                              chunksize):
                 input = model.node_embedding[node_index]
                 batch_grad_input = np.zeros(input.shape).astype(np.float32)
 
@@ -90,7 +110,6 @@ class Community2Vec(object):
                     batch_grad_input += np.squeeze(np.matmul(m, diff), axis=-1)
                 grad_input[node_index] += batch_grad_input
 
-
-            grad_input *= (beta/model.k)
+            grad_input *= (beta / model.k)
 
             model.node_embedding -= (grad_input.clip(min=-0.25, max=0.25)) * self.lr
