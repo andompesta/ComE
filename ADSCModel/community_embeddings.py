@@ -10,9 +10,9 @@ log.basicConfig(format='%(asctime).19s %(levelname)s %(filename)s: %(lineno)s %(
 
 
 class Community2Vec(object):
-    '''
+    """
     Class that train the community embedding
-    '''
+    """
     def __init__(self, lr):
         self.lr = lr
 
