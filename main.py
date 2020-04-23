@@ -47,9 +47,10 @@ if __name__ == "__main__":
     lr = 0.025  # learning rate
     alpha_betas = [(0.1, 0.1)]
     down_sampling = 0.0
-    weight_concentration_prior = 1e-6  # dirichlet concentration of each BGMM component to (de)activate components
 
-    come_model_type = "GMM"  # type of the Community Embedding model: GMM/BGMM
+    come_model_type = "BGMM"  # type of the Community Embedding model: GMM/BGMM
+    weight_concentration_prior = 1e-5  # dirichlet concentration of each BGMM component to (de)activate components
+
     ks = [15]  # number of communities to initialize the BGMM with
     walks_filebase = os.path.join('data', output_file)  # where read/write the sampled path
 
