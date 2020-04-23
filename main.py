@@ -49,6 +49,7 @@ if __name__ == "__main__":
     down_sampling = 0.0
     weight_concentration_prior = 1e-6  # dirichlet concentration of each BGMM component to (de)activate components
 
+    come_model_type = "GMM"  # type of the Community Embedding model: GMM/BGMM
     ks = [15]  # number of communities to initialize the BGMM with
     walks_filebase = os.path.join('data', output_file)  # where read/write the sampled path
 
@@ -74,7 +75,7 @@ if __name__ == "__main__":
     # Learning algorithm
     node_learner = Node2Vec(workers=num_workers, negative=negative, lr=lr)
     cont_learner = Context2Vec(window_size=window_size, workers=num_workers, negative=negative, lr=lr)
-    com_learner = Community2Vec(lr=lr)
+    com_learner = Community2Vec(lr=lr, model_type=come_model_type)
 
     context_total_path = G.number_of_nodes() * number_walks * walk_length
     edges = np.array(G.edges())
