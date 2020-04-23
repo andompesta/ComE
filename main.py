@@ -78,7 +78,7 @@ if __name__ == "__main__":
 
     context_total_path = G.number_of_nodes() * number_walks * walk_length
     edges = np.array(G.edges())
-    log.debug("context_total_path: %d" % (context_total_path))
+    log.debug("context_total_path: %d" % context_total_path)
     log.debug('node total edges: %d' % G.number_of_edges())
 
     log.info('\n_______________________________________')
