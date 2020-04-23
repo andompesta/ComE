@@ -13,7 +13,7 @@ from ADSCModel.model import Model
 from ADSCModel.context_embeddings import Context2Vec
 from ADSCModel.node_embeddings import Node2Vec
 from ADSCModel.community_embeddings import Community2Vec
-import utils.IO_utils as io_utils
+from utils.IO_utils import save_embedding
 import utils.graph_utils as graph_utils
 import utils.plot_utils as plot_utils
 import timeit
@@ -136,8 +136,8 @@ if __name__ == "__main__":
 
                 log.info('time: %.2fs' % (timeit.default_timer() - start_time))
                 # log.info(model.centroid)
-                io_utils.save_embedding(model.node_embedding, model.vocab,
-                                        file_name="{}_alpha-{}_beta-{}_ws-{}_neg-{}_lr-{}_icom-{}_ind-{}_k-{}_ds-{}".format(
+                save_embedding(model.node_embedding, model.vocab,
+                               file_name="{}_alpha-{}_beta-{}_ws-{}_neg-{}_lr-{}_icom-{}_ind-{}_k-{}_ds-{}".format(
                                             output_file,
                                             alpha,
                                             beta,
