@@ -15,13 +15,13 @@ class Community2Vec(object):
     Class that train the community embedding
     """
 
-    def __init__(self, lr, mixture_type="GMM"):
+    def __init__(self, lr, model_type="GMM"):
         """
         :param lr: learning rate
-        :param mixture_type: Gaussian Mixture Model (GMM, default) or Bayesian Gaussian Mixture Model (BGMM)
+        :param model_type: GMM: Gaussian Mixture Model (default) or BGMM: Bayesian Gaussian Mixture Model (BGMM)
         """
         self.lr = lr
-        self.mixture_type = mixture_type
+        self.model_type = model_type
         self.g_mixture = None
 
     def fit(self, model, reg_covar=0, n_init=10, weight_concentration_prior=None):
@@ -32,19 +32,19 @@ class Community2Vec(object):
         :param n_init: number of initializations to perform
         :param weight_concentration_prior: dirichlet concentration of each component (gamma). default: 1/n_components
         """
-        if self.mixture_type == "BGMM":
+        if self.model_type == "BGMM":
             self.g_mixture = mixture.BayesianGaussianMixture(n_components=model.k,
                                                              weight_concentration_prior=weight_concentration_prior,
                                                              reg_covar=reg_covar,
                                                              covariance_type='full',
                                                              n_init=n_init)
-        elif self.mixture_type == "GMM":
+        elif self.model_type == "GMM":
             self.g_mixture = mixture.GaussianMixture(n_components=model.k,
                                                      reg_covar=reg_covar,
                                                      covariance_type='full',
                                                      n_init=n_init)
         else:
-            print("Unknown mixture_type: ", self.mixture_type)
+            print("Unknown ComE model type: ", self.model_type)
             print("Using GMM for community embeddings")
             self.g_mixture = mixture.GaussianMixture(n_components=model.k,
                                                      reg_covar=reg_covar,
