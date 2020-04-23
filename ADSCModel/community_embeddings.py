@@ -15,32 +15,36 @@ class Community2Vec(object):
     Class that train the community embedding
     """
 
-    def __init__(self, lr):
+    def __init__(self, lr, mixture_type="GMM"):
+        """
+        :param lr: learning rate
+        :param mixture_type: Gaussian Mixture Model (GMM, default) or Bayesian Gaussian Mixture Model (BGMM)
+        """
         self.lr = lr
+        self.mixture_type = mixture_type
         self.g_mixture = None
 
-    def fit(self, model, mixture_type="GMM", reg_covar=0, n_init=10, weight_concentration_prior=None):
+    def fit(self, model, reg_covar=0, n_init=10, weight_concentration_prior=None):
         """
-        Fit the GMM model with the current node embedding and save the result in the model
+        Fit the GMM/BGMM model with the current node embedding and save the result in the model
         :param model: model injected to add the mixture parameters
-        :param mixture_type: Gaussian Mixture Model (GMM, default) or Bayesian Gaussian Mixture Model (BGMM)
         :param reg_covar: non-negative regularization added to the diagonal of covariance
         :param n_init: number of initializations to perform
         :param weight_concentration_prior: dirichlet concentration of each component (gamma). default: 1/n_components
         """
-        if mixture_type == "BGMM":
+        if self.mixture_type == "BGMM":
             self.g_mixture = mixture.BayesianGaussianMixture(n_components=model.k,
                                                              weight_concentration_prior=weight_concentration_prior,
                                                              reg_covar=reg_covar,
                                                              covariance_type='full',
                                                              n_init=n_init)
-        elif mixture_type == "GMM":
+        elif self.mixture_type == "GMM":
             self.g_mixture = mixture.GaussianMixture(n_components=model.k,
                                                      reg_covar=reg_covar,
                                                      covariance_type='full',
                                                      n_init=n_init)
         else:
-            print("Unknown mixture_type: ", mixture_type)
+            print("Unknown mixture_type: ", self.mixture_type)
             print("Using GMM for community embeddings")
             self.g_mixture = mixture.GaussianMixture(n_components=model.k,
                                                      reg_covar=reg_covar,
