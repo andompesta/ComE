@@ -32,7 +32,6 @@ except AttributeError:
 
 if __name__ == "__main__":
 
-    # Reading the input parameters form the configuration files
     number_walks = 10  # number of walks for each node
     walk_length = 80  # length of each walk
     representation_size = 2  # size of the embedding
