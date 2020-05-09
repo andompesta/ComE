@@ -139,16 +139,16 @@ if __name__ == "__main__":
                 # log.info(model.centroid)
                 save_embedding(model.node_embedding, model.vocab,
                                file_name="{}_alpha-{}_beta-{}_ws-{}_neg-{}_lr-{}_icom-{}_ind-{}_k-{}_ds-{}".format(
-                                            output_file,
-                                            alpha,
-                                            beta,
-                                            window_size,
-                                            negative,
-                                            lr,
-                                            iter_com,
-                                            iter_node,
-                                            model.k,
-                                            down_sampling))
+                                   output_file,
+                                   alpha,
+                                   beta,
+                                   window_size,
+                                   negative,
+                                   lr,
+                                   iter_com,
+                                   iter_node,
+                                   model.k,
+                                   down_sampling))
 
 # ### write predictions to labels_pred.txt
 
@@ -159,19 +159,22 @@ joblib.dump(com_learner.g_mixture, './data/g_mixture.joblib')
 labels_pred = np.array(com_learner.g_mixture.predict(model.node_embedding)).astype(int)
 np.savetxt('./data/labels_pred.txt', labels_pred)
 
-# ### plot stuff
+### plotting
+plot_name = str(ks[0])
 
 # graph_plot
-plot_utils.graph_plot(G, labels=labels_pred)
+plot_utils.graph_plot(G, labels=labels_pred, plot_name=plot_name, save=True)
 
 # node_space_plot_2D
-plot_utils.node_space_plot_2d(model.node_embedding, labels=labels_pred)
+plot_utils.node_space_plot_2d(model.node_embedding, labels=labels_pred, plot_name=plot_name, save=True)
 
 # node_space_plot_2d_ellipsoid
 plot_utils.node_space_plot_2d_ellipsoid(model.node_embedding,
                                         labels=labels_pred,
                                         means=com_learner.g_mixture.means_,
-                                        covariances=com_learner.g_mixture.covariances_)
+                                        covariances=com_learner.g_mixture.covariances_,
+                                        plot_name=plot_name,
+                                        save=True)
 
 # bar_plot_bgmm_pi
-plot_utils.bar_plot_bgmm_weights(com_learner.g_mixture.weights_)
+plot_utils.bar_plot_bgmm_weights(com_learner.g_mixture.weights_, plot_name=plot_name, save=True)

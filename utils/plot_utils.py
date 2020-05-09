@@ -34,6 +34,7 @@ def _binary_commonity(G, label):
 
 def graph_plot(G,
                labels=None,
+               path="./graph",
                show=True):
     spring_pos = nx.spring_layout(G)
     plt.figure(figsize=(5, 5))
@@ -49,8 +50,8 @@ def graph_plot(G,
 
 def node_space_plot_2d(embedding,
                        labels=None,
-                       path="graph",
-                       graph_name='graph',
+                       path="./graph",
+                       plot_name="graph",
                        save=False,
                        grid=False):
     fig = plt.figure(figsize=(5, 5))
@@ -90,7 +91,7 @@ def node_space_plot_2d(embedding,
     if save:
         if not exists(path):
             makedirs(path)
-        plt.savefig(path + graph_name + '_prj_2d' + '.png')
+        plt.savefig(path + "/node_emb_" + plot_name + '.png')
         plt.close()
     else:
         plt.show()
@@ -101,9 +102,9 @@ def node_space_plot_2d_ellipsoid(embedding,
                                  means=None,
                                  covariances=None,
                                  grid=False,
-                                 path='./graph',
+                                 path="./graph",
                                  plot_name=None,
-                                 show=True):
+                                 save=False):
     fig = plt.figure(figsize=(5, 5))
     ax = fig.add_subplot(111)
     nodes_id = np.array(list(range(len(embedding))))
@@ -160,17 +161,28 @@ def node_space_plot_2d_ellipsoid(embedding,
 
         ax.grid(which='both')
 
-    if plot_name:
+    if save:
         if not exists(path):
             makedirs(path)
-        plt.savefig(path_join(path, plot_name + '.png'))
-
-    if show:
+        plt.savefig(path + "/embeddings_" + plot_name + '.png')
+        plt.close()
+    else:
         plt.show()
 
     plt.clf()
     plt.close()
 
 
-def bar_plot_bgmm_weights(weights):
+def bar_plot_bgmm_weights(weights,
+                          path="./graph",
+                          plot_name=None,
+                          save=False):
     plt.bar(np.arange(len(weights)), weights)
+
+    if save:
+        if not exists(path):
+            makedirs(path)
+        plt.savefig(path + "/weights_" + plot_name + '.png')
+        plt.close()
+    else:
+        plt.show()
