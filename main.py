@@ -161,9 +161,6 @@ np.savetxt('./data/labels_pred.txt', labels_pred)
 
 # ### plot stuff
 
-# bar_plot_bgmm_pi
-plot_utils.bar_plot_bgmm_weights(com_learner.g_mixture.weights_)
-
 # graph_plot
 plot_utils.graph_plot(G, labels=labels_pred)
 
@@ -175,3 +172,6 @@ plot_utils.node_space_plot_2d_ellipsoid(model.node_embedding,
                                         labels=labels_pred,
                                         means=com_learner.g_mixture.means_,
                                         covariances=com_learner.g_mixture.covariances_)
+
+# bar_plot_bgmm_pi
+plot_utils.bar_plot_bgmm_weights(com_learner.g_mixture.weights_)
