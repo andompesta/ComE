@@ -34,7 +34,7 @@ def _binary_commonity(G, label):
 
 def graph_plot(G,
                labels=None,
-               path="./out",
+               path="./plots",
                plot_name="graph",
                save=True):
     spring_pos = nx.spring_layout(G)
@@ -56,7 +56,7 @@ def graph_plot(G,
 
 def node_space_plot_2d(embedding,
                        labels=None,
-                       path="./out",
+                       path="./plots",
                        plot_name="graph",
                        save=False,
                        grid=False):
@@ -108,7 +108,7 @@ def node_space_plot_2d_ellipsoid(embedding,
                                  means=None,
                                  covariances=None,
                                  grid=False,
-                                 path="./out",
+                                 path="./plots",
                                  plot_name=None,
                                  save=False):
     fig = plt.figure(figsize=(5, 5))
@@ -180,7 +180,7 @@ def node_space_plot_2d_ellipsoid(embedding,
 
 
 def bar_plot_bgmm_weights(weights,
-                          path="./out",
+                          path="./plots",
                           plot_name=None,
                           save=False):
     plt.bar(np.arange(len(weights)), weights)
