@@ -13,7 +13,7 @@ from ADSCModel.model import Model
 from ADSCModel.context_embeddings import Context2Vec
 from ADSCModel.node_embeddings import Node2Vec
 from ADSCModel.community_embeddings import Community2Vec
-import utils.IO_utils as io_utils
+from utils.IO_utils import save_embedding
 import utils.graph_utils as graph_utils
 import utils.plot_utils as plot_utils
 import timeit
@@ -32,7 +32,6 @@ except AttributeError:
 
 if __name__ == "__main__":
 
-    # Reading the input parameters form the configuration files
     number_walks = 10  # number of walks for each node
     walk_length = 80  # length of each walk
     representation_size = 2  # size of the embedding
@@ -47,7 +46,9 @@ if __name__ == "__main__":
     lr = 0.025  # learning rate
     alpha_betas = [(0.1, 0.1)]
     down_sampling = 0.0
-    weight_concentration_prior = 1e-6  # dirichlet concentration of each BGMM component to (de)activate components
+
+    come_model_type = "BGMM"  # type of the Community Embedding model: GMM/BGMM
+    weight_concentration_prior = 1e-5  # dirichlet concentration of each BGMM component to (de)activate components
 
     ks = [15]  # number of communities to initialize the BGMM with
     walks_filebase = os.path.join('data', output_file)  # where read/write the sampled path
@@ -74,11 +75,11 @@ if __name__ == "__main__":
     # Learning algorithm
     node_learner = Node2Vec(workers=num_workers, negative=negative, lr=lr)
     cont_learner = Context2Vec(window_size=window_size, workers=num_workers, negative=negative, lr=lr)
-    com_learner = Community2Vec(lr=lr)
+    com_learner = Community2Vec(lr=lr, model_type=come_model_type)
 
     context_total_path = G.number_of_nodes() * number_walks * walk_length
     edges = np.array(G.edges())
-    log.debug("context_total_path: %d" % (context_total_path))
+    log.debug("context_total_path: %d" % context_total_path)
     log.debug('node total edges: %d' % G.number_of_edges())
 
     log.info('\n_______________________________________')
@@ -136,18 +137,18 @@ if __name__ == "__main__":
 
                 log.info('time: %.2fs' % (timeit.default_timer() - start_time))
                 # log.info(model.centroid)
-                io_utils.save_embedding(model.node_embedding, model.vocab,
-                                        file_name="{}_alpha-{}_beta-{}_ws-{}_neg-{}_lr-{}_icom-{}_ind-{}_k-{}_ds-{}".format(
-                                            output_file,
-                                            alpha,
-                                            beta,
-                                            window_size,
-                                            negative,
-                                            lr,
-                                            iter_com,
-                                            iter_node,
-                                            model.k,
-                                            down_sampling))
+                save_embedding(model.node_embedding, model.vocab,
+                               file_name="{}_alpha-{}_beta-{}_ws-{}_neg-{}_lr-{}_icom-{}_ind-{}_k-{}_ds-{}".format(
+                                   output_file,
+                                   alpha,
+                                   beta,
+                                   window_size,
+                                   negative,
+                                   lr,
+                                   iter_com,
+                                   iter_node,
+                                   model.k,
+                                   down_sampling))
 
 # ### write predictions to labels_pred.txt
 
@@ -158,19 +159,22 @@ joblib.dump(com_learner.g_mixture, './data/g_mixture.joblib')
 labels_pred = np.array(com_learner.g_mixture.predict(model.node_embedding)).astype(int)
 np.savetxt('./data/labels_pred.txt', labels_pred)
 
-# ### plot stuff
-
-# bar_plot_bgmm_pi
-plot_utils.bar_plot_bgmm_weights(com_learner.g_mixture.weights_)
+### plotting
+plot_name = str(ks[0])
 
 # graph_plot
-plot_utils.graph_plot(G, labels=labels_pred)
+plot_utils.graph_plot(G, labels=labels_pred, plot_name=plot_name, save=True)
 
 # node_space_plot_2D
-plot_utils.node_space_plot_2d(model.node_embedding, labels=labels_pred)
+plot_utils.node_space_plot_2d(model.node_embedding, labels=labels_pred, plot_name=plot_name, save=True)
 
 # node_space_plot_2d_ellipsoid
 plot_utils.node_space_plot_2d_ellipsoid(model.node_embedding,
                                         labels=labels_pred,
                                         means=com_learner.g_mixture.means_,
-                                        covariances=com_learner.g_mixture.covariances_)
+                                        covariances=com_learner.g_mixture.covariances_,
+                                        plot_name=plot_name,
+                                        save=True)
+
+# bar_plot_bgmm_pi
+plot_utils.bar_plot_bgmm_weights(com_learner.g_mixture.weights_, plot_name=plot_name, save=True)
