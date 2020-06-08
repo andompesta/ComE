@@ -34,16 +34,17 @@ if __name__ == "__main__":
 
     number_walks = 10  # γ: number of walks for each node
     walk_length = 80  # l: length of each walk
-    representation_size = 2  # size of the embedding
+    representation_size = 128  # size of the embedding
     num_workers = 10  # number of thread
     num_iter = 1  # number of overall iteration
     reg_covar = 0.00001  # regularization coefficient to ensure positive covar
-    output_file = 'karate_club'  # name of the output file
+    input_file = 'Dblp'  # name of the input file
+    output_file = 'Dblp'  # name of the output file
     batch_size = 50
     window_size = 10  # ζ: windows size used to compute the context embedding
     negative = 5  # m: number of negative sample
     lr = 0.025  # learning rate
-    alpha_betas = [(0.1, 0.1)]  # Trade-off parameter for context/community embedding
+    alpha_betas = [(10, 5)]  # Trade-off parameter for context/community embedding
     down_sampling = 0.0
 
     come_model_type = "BGMM"  # type of the Community Embedding model: GMM/BGMM
