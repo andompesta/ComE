@@ -150,32 +150,32 @@ if __name__ == "__main__":
                                    model.k,
                                    down_sampling))
 
-# ### write predictions to labels_pred.txt
+    # ### write predictions to labels_pred.txt
 
-# save com_learner.g_mixture to file
-joblib.dump(com_learner.g_mixture, './data/g_mixture.joblib')
+    # save com_learner.g_mixture to file
+    joblib.dump(com_learner.g_mixture, './data/g_mixture.joblib')
 
-# using predictions from com_learner.g_mixture with node_embeddings
-labels_pred = np.array(com_learner.g_mixture.predict(model.node_embedding)).astype(int)
-np.savetxt('./data/labels_pred.txt', labels_pred)
+    # using predictions from com_learner.g_mixture with node_embeddings
+    labels_pred = np.array(com_learner.g_mixture.predict(model.node_embedding)).astype(int)
+    np.savetxt('./data/labels_pred.txt', labels_pred)
 
-### plotting
-plot_name = str(ks[0])
+    ### plotting
+    plot_name = str(ks[0])
 
-if (representation_size == 2):
-    # graph_plot
-    plot_utils.graph_plot(G, labels=labels_pred, plot_name=plot_name, save=True)
+    if (representation_size == 2):
+        # graph_plot
+        plot_utils.graph_plot(G, labels=labels_pred, plot_name=plot_name, save=True)
 
-    # node_space_plot_2D
-    plot_utils.node_space_plot_2d(model.node_embedding, labels=labels_pred, plot_name=plot_name, save=True)
+        # node_space_plot_2D
+        plot_utils.node_space_plot_2d(model.node_embedding, labels=labels_pred, plot_name=plot_name, save=True)
 
-    # node_space_plot_2d_ellipsoid
-    plot_utils.node_space_plot_2d_ellipsoid(model.node_embedding,
-                                            labels=labels_pred,
-                                            means=com_learner.g_mixture.means_,
-                                            covariances=com_learner.g_mixture.covariances_,
-                                            plot_name=plot_name,
-                                            save=True)
+        # node_space_plot_2d_ellipsoid
+        plot_utils.node_space_plot_2d_ellipsoid(model.node_embedding,
+                                                labels=labels_pred,
+                                                means=com_learner.g_mixture.means_,
+                                                covariances=com_learner.g_mixture.covariances_,
+                                                plot_name=plot_name,
+                                                save=True)
 
-# bar_plot_bgmm_pi
-plot_utils.bar_plot_bgmm_weights(com_learner.g_mixture.weights_, plot_name=plot_name, save=True)
+    # bar_plot_bgmm_pi
+    plot_utils.bar_plot_bgmm_weights(com_learner.g_mixture.weights_, plot_name=plot_name, save=True)
