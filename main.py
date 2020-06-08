@@ -47,7 +47,7 @@ if __name__ == "__main__":
     alpha_betas = [(10, 5)]  # Trade-off parameter for context/community embedding
     down_sampling = 0.0
 
-    come_model_type = "BGMM"  # type of the Community Embedding model: GMM/BGMM
+    come_model_type = "GMM"  # type of the Community Embedding model: GMM/BGMM
     weight_concentration_prior = 1e-5  # dirichlet concentration of each BGMM component to (de)activate components
 
     ks = [15]  # number of communities to initialize the BGMM with
