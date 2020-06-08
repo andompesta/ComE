@@ -162,19 +162,20 @@ np.savetxt('./data/labels_pred.txt', labels_pred)
 ### plotting
 plot_name = str(ks[0])
 
-# graph_plot
-plot_utils.graph_plot(G, labels=labels_pred, plot_name=plot_name, save=True)
+if (representation_size == 2):
+    # graph_plot
+    plot_utils.graph_plot(G, labels=labels_pred, plot_name=plot_name, save=True)
 
-# node_space_plot_2D
-plot_utils.node_space_plot_2d(model.node_embedding, labels=labels_pred, plot_name=plot_name, save=True)
+    # node_space_plot_2D
+    plot_utils.node_space_plot_2d(model.node_embedding, labels=labels_pred, plot_name=plot_name, save=True)
 
-# node_space_plot_2d_ellipsoid
-plot_utils.node_space_plot_2d_ellipsoid(model.node_embedding,
-                                        labels=labels_pred,
-                                        means=com_learner.g_mixture.means_,
-                                        covariances=com_learner.g_mixture.covariances_,
-                                        plot_name=plot_name,
-                                        save=True)
+    # node_space_plot_2d_ellipsoid
+    plot_utils.node_space_plot_2d_ellipsoid(model.node_embedding,
+                                            labels=labels_pred,
+                                            means=com_learner.g_mixture.means_,
+                                            covariances=com_learner.g_mixture.covariances_,
+                                            plot_name=plot_name,
+                                            save=True)
 
 # bar_plot_bgmm_pi
 plot_utils.bar_plot_bgmm_weights(com_learner.g_mixture.weights_, plot_name=plot_name, save=True)
