@@ -9,11 +9,14 @@ import joblib
 import numpy as np
 import psutil
 from math import floor
+
+from sklearn import metrics
+
 from ADSCModel.model import Model
 from ADSCModel.context_embeddings import Context2Vec
 from ADSCModel.node_embeddings import Node2Vec
 from ADSCModel.community_embeddings import Community2Vec
-from utils.IO_utils import save_embedding
+from utils.IO_utils import save_embedding, load_ground_true
 import utils.graph_utils as graph_utils
 import utils.plot_utils as plot_utils
 import timeit
@@ -158,6 +161,12 @@ if __name__ == "__main__":
     # using predictions from com_learner.g_mixture with node_embeddings
     labels_pred = np.array(com_learner.g_mixture.predict(model.node_embedding)).astype(int)
     np.savetxt('./data/labels_pred.txt', labels_pred)
+
+    ### NMI
+    labels_true, _ = load_ground_true(path="data", file_name=input_file)
+    print("labels_true: ", labels_true)
+    nmi = metrics.normalized_mutual_info_score(labels_true, labels_pred)
+    print("===NMI=== ", nmi)
 
     ### plotting
     plot_name = str(ks[0])
