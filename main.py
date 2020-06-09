@@ -163,7 +163,7 @@ if __name__ == "__main__":
     np.savetxt('./data/labels_pred.txt', labels_pred)
 
     ### NMI
-    labels_true, _ = load_ground_true(path="data", file_name=input_file)
+    labels_true, _ = load_ground_true(path="data/"+input_file, file_name=input_file)
     print("labels_true: ", labels_true)
     nmi = metrics.normalized_mutual_info_score(labels_true, labels_pred)
     print("===NMI=== ", nmi)
