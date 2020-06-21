@@ -174,8 +174,9 @@ if __name__ == "__main__":
     ### NMI
     labels_true, _ = load_ground_true(path="data/"+input_file, file_name=input_file)
     print("labels_true: ", labels_true)
-    nmi = metrics.normalized_mutual_info_score(labels_true, labels_pred)
-    print("===NMI=== ", nmi)
+    if labels_true is not None:
+        nmi = metrics.normalized_mutual_info_score(labels_true, labels_pred)
+        print("===NMI=== ", nmi)
 
     ### plotting
     plot_name = str(ks[0])

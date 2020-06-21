@@ -39,7 +39,7 @@ def load_ground_true(path='data/', file_name=None, multilabel=False):
                     labels[node_id] = [label_id]
     except IOError:
         print("Error: File does not exist: ", path_join(path, file_name + '.labels'))
-        return 0, 0
+        return None, 0
 
     ret = []
     for key in sorted(labels.keys()):
