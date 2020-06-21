@@ -57,7 +57,7 @@ if __name__ == "__main__":
     walks_filebase = os.path.join('data', output_file)  # where read/write the sampled path
 
     # CONSTRUCT THE GRAPH
-    #G = graph_utils.load_matfile(os.path.join('./data', input_file, input_file + '.mat'), undirected=True)
+    # G = graph_utils.load_matfile(os.path.join('./data', input_file, input_file + '.mat'), undirected=True)
     G = nx.karate_club_graph()  # DEBUG run on karate club graph
 
     # Sampling the random walks for context
@@ -173,7 +173,7 @@ if __name__ == "__main__":
     np.savetxt('./data/labels_pred.txt', model.classify_nodes())
 
     # ### NMI
-    labels_true, _ = load_ground_true(path="data/"+input_file, file_name=input_file)
+    labels_true, _ = load_ground_true(path="data/" + input_file, file_name=input_file)
     print("labels_true: ", labels_true)
     if labels_true is not None:
         nmi = metrics.normalized_mutual_info_score(labels_true, node_classification)
