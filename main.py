@@ -158,7 +158,7 @@ if __name__ == "__main__":
                                                         labels=model.classify_nodes(),
                                                         means=com_learner.g_mixture.means_,
                                                         covariances=com_learner.g_mixture.covariances_,
-                                                        plot_name=f"k{k}_iter{it}",
+                                                        plot_name=f"k{k}_i{it}",
                                                         save=True)
 
     # ### print model
