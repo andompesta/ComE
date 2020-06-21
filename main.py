@@ -41,8 +41,8 @@ if __name__ == "__main__":
     num_workers = 10  # number of thread
     num_iter = 2  # number of overall iteration
     reg_covar = 0.00001  # regularization coefficient to ensure positive covar
-    input_file = 'Karateclub'  # name of the input file
-    output_file = 'Karateclub'  # name of the output file
+    input_file = 'karate_club'  # name of the input file
+    output_file = 'karate_club'  # name of the output file
     batch_size = 50
     window_size = 10  # ζ: windows size used to compute the context embedding
     negative = 5  # m: number of negative sample
