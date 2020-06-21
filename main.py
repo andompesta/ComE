@@ -111,11 +111,11 @@ if __name__ == "__main__":
     # iter_com = 1
     # alpha, beta = alpha_betas
 
-    for it in range(num_iter):
+    for i in range(num_iter):
         for alpha, beta in alpha_betas:
             for k in ks:
                 log.info('\n_______________________________________\n')
-                log.info('\t\tITER-{}\n'.format(it))
+                log.info('\t\tITER-{}\n'.format(i))
                 model = model.load_model("{}_pre-training".format(output_file))
                 model.reset_communities_weights(k)
                 log.info('using alpha:{}\tbeta:{}\titer_com:{}\titer_node: {}'.format(alpha, beta, iter_com, iter_node))
@@ -158,7 +158,7 @@ if __name__ == "__main__":
                                                         labels=model.classify_nodes(),
                                                         means=com_learner.g_mixture.means_,
                                                         covariances=com_learner.g_mixture.covariances_,
-                                                        plot_name=f"k{k}_i{it}",
+                                                        plot_name=f"k{k}_i{i}",
                                                         save=True)
 
     # ### print model
