@@ -153,6 +153,14 @@ if __name__ == "__main__":
                                    model.k,
                                    down_sampling))
 
+                # DEBUG plot after each iter
+                plot_utils.node_space_plot_2d_ellipsoid(model.node_embedding,
+                                                        labels=model.classify_nodes(),
+                                                        means=com_learner.g_mixture.means_,
+                                                        covariances=com_learner.g_mixture.covariances_,
+                                                        plot_name=str(k),
+                                                        save=True)
+
     # ### print model
     node_classification = model.classify_nodes()
     print("model:\n",
@@ -182,7 +190,7 @@ if __name__ == "__main__":
     # ### plotting
     plot_name = str(ks[0])
 
-    if (representation_size == 2):
+    if representation_size == 2:
         # graph_plot
         plot_utils.graph_plot(G, labels=node_classification, plot_name=plot_name, save=True)
 
