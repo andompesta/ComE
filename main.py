@@ -162,6 +162,15 @@ if __name__ == "__main__":
     labels_pred = np.array(com_learner.g_mixture.predict(model.node_embedding)).astype(int)
     np.savetxt('./data/labels_pred.txt', labels_pred)
 
+    ### print model
+    print("model:\n",
+          "  model.node_embedding: ", model.node_embedding, "\n",
+          "  model.context_embedding: ", model.context_embedding, "\n",
+          "  model.centroid: ", model.centroid, "\n",
+          "  model.covariance_mat: ", model.covariance_mat, "\n",
+          "  model.inv_covariance_mat: ", model.inv_covariance_mat, "\n",
+          "  model.pi: ", model.pi, "\n",)
+
     ### NMI
     labels_true, _ = load_ground_true(path="data/"+input_file, file_name=input_file)
     print("labels_true: ", labels_true)
