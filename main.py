@@ -153,25 +153,24 @@ if __name__ == "__main__":
                                    model.k,
                                    down_sampling))
 
-    # ### write predictions to labels_pred.txt
-
-    # save com_learner.g_mixture to file
-    joblib.dump(com_learner.g_mixture, './data/g_mixture.joblib')
-
-    # using predictions from com_learner.g_mixture with node_embeddings
+    # ### print model
     labels_pred = np.array(com_learner.g_mixture.predict(model.node_embedding)).astype(int)
-    np.savetxt('./data/labels_pred.txt', labels_pred)
-
-    ### print model
     print("model:\n",
           "  model.node_embedding: ", model.node_embedding, "\n",
           "  model.context_embedding: ", model.context_embedding, "\n",
           "  model.centroid: ", model.centroid, "\n",
           "  model.covariance_mat: ", model.covariance_mat, "\n",
           "  model.inv_covariance_mat: ", model.inv_covariance_mat, "\n",
-          "  model.pi: ", model.pi, "\n",)
+          "  model.pi: ", model.pi, "\n",
+          "=>labels_pred: ", labels_pred, "\n", )
 
-    ### NMI
+    # ### write predictions to labels_pred.txt
+    # save com_learner.g_mixture to file
+    joblib.dump(com_learner.g_mixture, './data/g_mixture.joblib')
+    # using predictions from com_learner.g_mixture with node_embeddings
+    np.savetxt('./data/labels_pred.txt', labels_pred)
+
+    # ### NMI
     labels_true, _ = load_ground_true(path="data/"+input_file, file_name=input_file)
     print("labels_true: ", labels_true)
     if labels_true is not None:
@@ -180,7 +179,7 @@ if __name__ == "__main__":
     else:
         print("===NMI=== could not be computed")
 
-    ### plotting
+    # ### plotting
     plot_name = str(ks[0])
 
     if (representation_size == 2):
