@@ -127,4 +127,4 @@ class Community2Vec(object):
         if self.g_mixture:
             return self.g_mixture.converged_
         else:
-            return True
+            return False
