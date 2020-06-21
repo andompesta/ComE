@@ -107,7 +107,7 @@ if __name__ == "__main__":
     #   EMBEDDING LEARNING    #
     ###########################
     iter_node = floor(context_total_path / G.number_of_edges())
-    iter_com = floor(context_total_path / (G.number_of_edges()))
+    iter_com = floor(context_total_path / G.number_of_edges())
     # iter_com = 1
     # alpha, beta = alpha_betas
 
