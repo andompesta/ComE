@@ -114,7 +114,7 @@ if __name__ == "__main__":
     for i in range(num_iter):
         for (alpha, beta), k in zip(alpha_betas, ks):
             com_max_iter = 0
-            while not com_learner.converged:
+            while not com_learner.converged:  # TODO does not work. how should the for-order of iter, (alpha, beta, k), com_max_iter be?
                 com_max_iter += 10  # TODO use increase as setting and only log on converge
 
                 print(f"===com_max_iter=== {com_max_iter}")
