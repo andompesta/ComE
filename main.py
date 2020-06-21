@@ -47,7 +47,7 @@ if __name__ == "__main__":
     window_size = 10  # ζ: windows size used to compute the context embedding
     negative = 5  # m: number of negative sample
     lr = 0.025  # learning rate
-    alpha_betas = [(10, 5)]  # Trade-off parameter for context/community embedding
+    alpha_betas = [(0.1, 0.1)]  # Trade-off parameter for context/community embedding
     down_sampling = 0.0
 
     come_model_type = "BGMM"  # type of the Community Embedding model: GMM/BGMM
