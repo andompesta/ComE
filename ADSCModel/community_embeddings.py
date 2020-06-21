@@ -58,18 +58,11 @@ class Community2Vec(object):
         log.info("Fitting: {} communities".format(model.k))
         self.g_mixture.fit(model.node_embedding)
 
-        # diag_covars = []
-        # for covar in g.covariances_:
-        #     diag = np.diag(covar)
-        #     diag_covars.append(diag)
-
         model.centroid = self.g_mixture.means_.astype(np.float32)
         model.covariance_mat = self.g_mixture.covariances_.astype(np.float32)
         model.inv_covariance_mat = self.g_mixture.precisions_.astype(np.float32)
         model.pi = self.g_mixture.predict_proba(model.node_embedding).astype(np.float32)
 
-        # model.c = self.g_mixture.degrees_of_freedom_.astype(np.float32)
-        # model.B = self.g_mixture.covariance_prior_.astype(np.float32)
 
     def loss(self, nodes, model, beta, chunksize=150):
         """
