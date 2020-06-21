@@ -30,6 +30,7 @@ class Community2Vec(object):
         :param model: model injected to add the mixture parameters
         :param reg_covar: non-negative regularization added to the diagonal of covariance
         :param n_init: number of initializations to perform
+        :param max_iter: maximum number of iterations to run
         :param weight_concentration_prior: dirichlet concentration of each component (gamma). default: 1/n_components
         """
         if self.model_type == "BGMM":
@@ -37,19 +38,22 @@ class Community2Vec(object):
                                                              weight_concentration_prior=weight_concentration_prior,
                                                              reg_covar=reg_covar,
                                                              covariance_type='full',
-                                                             n_init=n_init)
+                                                             n_init=n_init,
+                                                             max_iter=max_iter)
         elif self.model_type == "GMM":
             self.g_mixture = mixture.GaussianMixture(n_components=model.k,
                                                      reg_covar=reg_covar,
                                                      covariance_type='full',
-                                                     n_init=n_init)
+                                                     n_init=n_init,
+                                                     max_iter=max_iter)
         else:
             print("Unknown ComE model type: ", self.model_type)
             print("Using GMM for community embeddings")
             self.g_mixture = mixture.GaussianMixture(n_components=model.k,
                                                      reg_covar=reg_covar,
                                                      covariance_type='full',
-                                                     n_init=n_init)
+                                                     n_init=n_init,
+                                                     max_iter=max_iter)
 
         log.info("Fitting: {} communities".format(model.k))
         self.g_mixture.fit(model.node_embedding)
