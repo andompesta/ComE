@@ -38,7 +38,7 @@ def load_ground_true(path='data/', file_name=None, multilabel=False):
                 else:
                     labels[node_id] = [label_id]
     except IOError:
-        print("Error: File does not exist: ", path_join(path, file_name + '.labels'))
+        print("Warning: Ground truth does not exist: ", path_join(path, file_name + '.labels'))
         return None, 0
 
     ret = []
