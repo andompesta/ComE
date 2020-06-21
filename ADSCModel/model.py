@@ -39,6 +39,7 @@ class Model(object):
 
         if nodes_degree is not None:
             self.build_vocab_(nodes_degree)
+            #self.ground_true, self.k = load_ground_true(path=path_labels, file_name=input_file)
             self.k = 0
             # initialize node and context embeddings
             self.make_table()

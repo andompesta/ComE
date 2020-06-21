@@ -9,11 +9,14 @@ import joblib
 import numpy as np
 import psutil
 from math import floor
+
+from sklearn import metrics
+
 from ADSCModel.model import Model
 from ADSCModel.context_embeddings import Context2Vec
 from ADSCModel.node_embeddings import Node2Vec
 from ADSCModel.community_embeddings import Community2Vec
-from utils.IO_utils import save_embedding
+from utils.IO_utils import save_embedding, load_ground_true
 import utils.graph_utils as graph_utils
 import utils.plot_utils as plot_utils
 import timeit
@@ -32,30 +35,30 @@ except AttributeError:
 
 if __name__ == "__main__":
 
-    number_walks = 10  # number of walks for each node
-    walk_length = 80  # length of each walk
-    representation_size = 2  # size of the embedding
+    number_walks = 10  # γ: number of walks for each node
+    walk_length = 80  # l: length of each walk
+    representation_size = 128  # size of the embedding
     num_workers = 10  # number of thread
-    num_iter = 1  # number of overall iteration
+    num_iter = 2  # number of overall iteration
     reg_covar = 0.00001  # regularization coefficient to ensure positive covar
-    input_file = 'karate_club'  # name of the input file
-    output_file = 'karate_club'  # name of the output file
+    input_file = 'Dblp'  # name of the input file
+    output_file = 'Dblp'  # name of the output file
     batch_size = 50
-    window_size = 10  # windows size used to compute the context embedding
-    negative = 5  # number of negative sample
+    window_size = 10  # ζ: windows size used to compute the context embedding
+    negative = 5  # m: number of negative sample
     lr = 0.025  # learning rate
-    alpha_betas = [(0.1, 0.1)]
+    alpha_betas = [(10, 5)]  # Trade-off parameter for context/community embedding
     down_sampling = 0.0
 
     come_model_type = "BGMM"  # type of the Community Embedding model: GMM/BGMM
     weight_concentration_prior = 1e-5  # dirichlet concentration of each BGMM component to (de)activate components
 
-    ks = [15]  # number of communities to initialize the BGMM with
+    ks = [5]  # number of communities to initialize the GMM/BGMM with
     walks_filebase = os.path.join('data', output_file)  # where read/write the sampled path
 
     # CONSTRUCT THE GRAPH
-    # G = graph_utils.load_matfile(os.path.join('./data', input_file, input_file + '.mat'), undirected=True)
-    G = nx.karate_club_graph()  # DEBUG run on karate club graph
+    G = graph_utils.load_matfile(os.path.join('./data', input_file, input_file + '.mat'), undirected=True)
+    # G = nx.karate_club_graph()  # DEBUG run on karate club graph
 
     # Sampling the random walks for context
     log.info("sampling the paths")
@@ -150,31 +153,38 @@ if __name__ == "__main__":
                                    model.k,
                                    down_sampling))
 
-# ### write predictions to labels_pred.txt
+    # ### write predictions to labels_pred.txt
 
-# save com_learner.g_mixture to file
-joblib.dump(com_learner.g_mixture, './data/g_mixture.joblib')
+    # save com_learner.g_mixture to file
+    joblib.dump(com_learner.g_mixture, './data/g_mixture.joblib')
 
-# using predictions from com_learner.g_mixture with node_embeddings
-labels_pred = np.array(com_learner.g_mixture.predict(model.node_embedding)).astype(int)
-np.savetxt('./data/labels_pred.txt', labels_pred)
+    # using predictions from com_learner.g_mixture with node_embeddings
+    labels_pred = np.array(com_learner.g_mixture.predict(model.node_embedding)).astype(int)
+    np.savetxt('./data/labels_pred.txt', labels_pred)
 
-### plotting
-plot_name = str(ks[0])
+    ### NMI
+    labels_true, _ = load_ground_true(path="data/"+input_file, file_name=input_file)
+    print("labels_true: ", labels_true)
+    nmi = metrics.normalized_mutual_info_score(labels_true, labels_pred)
+    print("===NMI=== ", nmi)
 
-# graph_plot
-plot_utils.graph_plot(G, labels=labels_pred, plot_name=plot_name, save=True)
+    ### plotting
+    plot_name = str(ks[0])
 
-# node_space_plot_2D
-plot_utils.node_space_plot_2d(model.node_embedding, labels=labels_pred, plot_name=plot_name, save=True)
+    if (representation_size == 2):
+        # graph_plot
+        plot_utils.graph_plot(G, labels=labels_pred, plot_name=plot_name, save=True)
 
-# node_space_plot_2d_ellipsoid
-plot_utils.node_space_plot_2d_ellipsoid(model.node_embedding,
-                                        labels=labels_pred,
-                                        means=com_learner.g_mixture.means_,
-                                        covariances=com_learner.g_mixture.covariances_,
-                                        plot_name=plot_name,
-                                        save=True)
+        # node_space_plot_2D
+        plot_utils.node_space_plot_2d(model.node_embedding, labels=labels_pred, plot_name=plot_name, save=True)
 
-# bar_plot_bgmm_pi
-plot_utils.bar_plot_bgmm_weights(com_learner.g_mixture.weights_, plot_name=plot_name, save=True)
+        # node_space_plot_2d_ellipsoid
+        plot_utils.node_space_plot_2d_ellipsoid(model.node_embedding,
+                                                labels=labels_pred,
+                                                means=com_learner.g_mixture.means_,
+                                                covariances=com_learner.g_mixture.covariances_,
+                                                plot_name=plot_name,
+                                                save=True)
+
+    # bar_plot_bgmm_pi
+    plot_utils.bar_plot_bgmm_weights(com_learner.g_mixture.weights_, plot_name=plot_name, save=True)
