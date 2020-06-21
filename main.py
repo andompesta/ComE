@@ -168,38 +168,34 @@ if __name__ == "__main__":
               "  model.pi: ", model.pi, "\n",
               "=>node_classification: ", node_classification, "\n", )
 
-    # ### write predictions to labels_pred.txt
-    # save com_learner.g_mixture to file
-    joblib.dump(com_learner.g_mixture, './data/g_mixture.joblib')
-    # using predictions from com_learner.g_mixture with node_embeddings
-    np.savetxt('./data/labels_pred.txt', model.classify_nodes())
+        # ### write predictions to labels_pred.txt
+        # save com_learner.g_mixture to file
+        joblib.dump(com_learner.g_mixture, './data/g_mixture.joblib')
+        # using predictions from com_learner.g_mixture with node_embeddings
+        np.savetxt('./data/labels_pred.txt', model.classify_nodes())
 
-    # ### NMI
-    labels_true, _ = load_ground_true(path="data/" + input_file, file_name=input_file)
-    print("labels_true: ", labels_true)
-    if labels_true is not None:
-        nmi = metrics.normalized_mutual_info_score(labels_true, node_classification)
-        print("===NMI=== ", nmi)
-    else:
-        print("===NMI=== could not be computed")
+        # ### NMI
+        labels_true, _ = load_ground_true(path="data/" + input_file, file_name=input_file)
+        print("labels_true: ", labels_true)
+        if labels_true is not None:
+            nmi = metrics.normalized_mutual_info_score(labels_true, node_classification)
+            print("===NMI=== ", nmi)
+        else:
+            print("===NMI=== could not be computed")
 
-    # ### plotting
-    plot_name = str(ks[0])
-
-    if representation_size == 2:
-        # graph_plot
-        plot_utils.graph_plot(G, labels=node_classification, plot_name=plot_name, save=True)
-
-        # node_space_plot_2D
-        plot_utils.node_space_plot_2d(model.node_embedding, labels=node_classification, plot_name=plot_name, save=True)
-
-        # node_space_plot_2d_ellipsoid
-        plot_utils.node_space_plot_2d_ellipsoid(model.node_embedding,
-                                                labels=node_classification,
-                                                means=com_learner.g_mixture.means_,
-                                                covariances=com_learner.g_mixture.covariances_,
-                                                plot_name=plot_name,
-                                                save=True)
-
-    # bar_plot_bgmm_pi
-    plot_utils.bar_plot_bgmm_weights(com_learner.g_mixture.weights_, plot_name=plot_name, save=True)
+        # ### plotting
+        plot_name = str(k)
+        if representation_size == 2:
+            # graph_plot
+            plot_utils.graph_plot(G, labels=node_classification, plot_name=plot_name, save=True)
+            # node_space_plot_2D
+            plot_utils.node_space_plot_2d(model.node_embedding, labels=node_classification, plot_name=plot_name, save=True)
+            # node_space_plot_2d_ellipsoid
+            plot_utils.node_space_plot_2d_ellipsoid(model.node_embedding,
+                                                    labels=node_classification,
+                                                    means=com_learner.g_mixture.means_,
+                                                    covariances=com_learner.g_mixture.covariances_,
+                                                    plot_name=plot_name,
+                                                    save=True)
+        # bar_plot_bgmm_pi
+        plot_utils.bar_plot_bgmm_weights(com_learner.g_mixture.weights_, plot_name=plot_name, save=True)
