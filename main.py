@@ -113,8 +113,9 @@ if __name__ == "__main__":
 
     for i in range(num_iter):
         for ((alpha, beta), k) in enumerate(alpha_betas, ks):
-            com_max_iter = 10
+            com_max_iter = 0
             while not com_learner.converged:
+                com_max_iter += 10  # TODO use increase as setting and only log on converge
 
 
 
@@ -128,7 +129,8 @@ if __name__ == "__main__":
                 com_learner.fit(model,
                                 weight_concentration_prior=weight_concentration_prior,
                                 reg_covar=reg_covar,
-                                n_init=10)
+                                n_init=10,
+                                max_iter=com_max_iter)
                 node_learner.train(model,
                                    edges=edges,
                                    iter=iter_node,
