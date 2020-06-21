@@ -115,10 +115,10 @@ if __name__ == "__main__":
         for alpha, beta in alpha_betas:
             for k in ks:
                 log.info('\n_______________________________________\n')
-                log.info('\t\tITER-{}\n'.format(i))
-                model = model.load_model("{}_pre-training".format(output_file))
+                log.info(f'\t\tITER-{i}\n')
+                model = model.load_model(f"{output_file}_pre-training")
                 model.reset_communities_weights(k)
-                log.info('using alpha:{}\tbeta:{}\titer_com:{}\titer_node: {}'.format(alpha, beta, iter_com, iter_node))
+                log.info(f'using alpha:{alpha}\tbeta:{beta}\titer_com:{iter_com}\titer_node: {iter_node}')
                 start_time = timeit.default_timer()
 
                 com_learner.fit(model,
@@ -141,17 +141,7 @@ if __name__ == "__main__":
                 log.info('time: %.2fs' % (timeit.default_timer() - start_time))
                 # log.info(model.centroid)
                 save_embedding(model.node_embedding, model.vocab,
-                               file_name="{}_alpha-{}_beta-{}_ws-{}_neg-{}_lr-{}_icom-{}_ind-{}_k-{}_ds-{}".format(
-                                   output_file,
-                                   alpha,
-                                   beta,
-                                   window_size,
-                                   negative,
-                                   lr,
-                                   iter_com,
-                                   iter_node,
-                                   model.k,
-                                   down_sampling))
+                               file_name=f"{output_file}_alpha-{alpha}_beta-{beta}_ws-{window_size}_neg-{negative}_lr-{lr}_icom-{iter_com}_ind-{iter_node}_k-{model.k}_ds-{down_sampling}")
 
                 # DEBUG plot after each iter
                 plot_utils.node_space_plot_2d_ellipsoid(model.node_embedding,
