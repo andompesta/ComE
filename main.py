@@ -127,10 +127,10 @@ if __name__ == "__main__":
                 start_time = timeit.default_timer()
 
                 com_learner.fit(model,
-                                weight_concentration_prior=weight_concentration_prior,
                                 reg_covar=reg_covar,
                                 n_init=10,
-                                max_iter=com_max_iter)
+                                max_iter=com_max_iter,
+                                weight_concentration_prior=weight_concentration_prior)
                 node_learner.train(model,
                                    edges=edges,
                                    iter=iter_node,
