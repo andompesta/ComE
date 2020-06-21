@@ -115,7 +115,7 @@ if __name__ == "__main__":
         log.info('\n_______________________________________\n')
         log.info(f'TRAINING \t\talpha:{alpha}\tbeta:{beta}\tk:{k}')
         model = model.load_model(f"{output_file}_pre-training")
-        model.reset_communities_weights(k)
+        model.reset_communities_weights(k)  # TODO can this be done here? compare with other ComE repos on GitHub
 
         for i in range(num_iter):
             log.info(f'\t\tITER-{i}\n')
@@ -126,19 +126,20 @@ if __name__ == "__main__":
                 log.info(f"->com_max_iter={com_max_iter}")
 
                 start_time = timeit.default_timer()
-
+                # TODO ???
                 com_learner.fit(model,
                                 reg_covar=reg_covar,
                                 n_init=10,
                                 max_iter=com_max_iter,
                                 weight_concentration_prior=weight_concentration_prior)
+                # TODO ???
                 node_learner.train(model,
                                    edges=edges,
                                    iter=iter_node,
                                    chunksize=batch_size)
-
+                # TODO ???
                 com_learner.train(G.nodes(), model, beta, chunksize=batch_size, iter=iter_com)
-
+                # TODO ???
                 cont_learner.train(model,
                                    paths=graph_utils.combine_files_iter(walk_files),
                                    total_nodes=context_total_path,
