@@ -113,6 +113,7 @@ if __name__ == "__main__":
     for (alpha, beta), k in zip(alpha_betas, ks):
         log.info('\n_______________________________________\n')
         log.info(f'TRAINING \t\talpha:{alpha}\tbeta:{beta}\tk:{k}')
+        model = model.load_model(f"{output_file}_pre-training")
 
         for i in range(num_iter):
             log.info(f'\t\tITER-{i}\n')
@@ -122,7 +123,6 @@ if __name__ == "__main__":
                 com_max_iter += 10  # TODO use increase as setting and only log on converge
                 log.info(f"->com_max_iter={com_max_iter}")
 
-                model = model.load_model(f"{output_file}_pre-training")
                 model.reset_communities_weights(k)
                 start_time = timeit.default_timer()
 
