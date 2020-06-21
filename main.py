@@ -112,8 +112,12 @@ if __name__ == "__main__":
     # alpha, beta = alpha_betas
 
     for i in range(num_iter):
-        for alpha, beta in alpha_betas:
-            for k in ks:
+        for ((alpha, beta), k) in enumerate(alpha_betas, ks):
+            com_max_iter = 10
+            while not com_learner.converged:
+
+
+
                 log.info('\n_______________________________________\n')
                 log.info(f'\t\tITER-{i}\n')
                 model = model.load_model(f"{output_file}_pre-training")

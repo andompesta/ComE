@@ -24,7 +24,7 @@ class Community2Vec(object):
         self.model_type = model_type
         self.g_mixture = None
 
-    def fit(self, model, reg_covar=0, n_init=10, weight_concentration_prior=None):
+    def fit(self, model, reg_covar=0, n_init=10, max_iter=1, weight_concentration_prior=None):
         """
         Fit the GMM/BGMM model with the current node embedding and save the result in the model
         :param model: model injected to add the mixture parameters
@@ -117,3 +117,7 @@ class Community2Vec(object):
             grad_input *= (beta / model.k)
 
             model.node_embedding -= (grad_input.clip(min=-0.25, max=0.25)) * self.lr
+
+    @property
+    def converged(self):
+        return self.g_mixture.converged_ or True
