@@ -177,6 +177,8 @@ if __name__ == "__main__":
     if labels_true is not None:
         nmi = metrics.normalized_mutual_info_score(labels_true, labels_pred)
         print("===NMI=== ", nmi)
+    else:
+        print("===NMI=== could not be computed")
 
     ### plotting
     plot_name = str(ks[0])
