@@ -117,7 +117,7 @@ if __name__ == "__main__":
             while not com_learner.converged:
                 com_max_iter += 10  # TODO use increase as setting and only log on converge
 
-
+                print(f"===com_max_iter=== {com_max_iter}")
 
                 log.info('\n_______________________________________\n')
                 log.info(f'\t\tITER-{i}\n')
