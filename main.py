@@ -53,7 +53,7 @@ if __name__ == "__main__":
     come_model_type = "BGMM"  # type of the Community Embedding model: GMM/BGMM
     weight_concentration_prior = 1e-5  # dirichlet concentration of each BGMM component to (de)activate components
 
-    ks = [5]  # number of communities to initialize the GMM/BGMM with
+    ks = [2, 5]  # number of communities to initialize the GMM/BGMM with
     walks_filebase = os.path.join('data', output_file)  # where read/write the sampled path
 
     # CONSTRUCT THE GRAPH
@@ -108,22 +108,22 @@ if __name__ == "__main__":
     ###########################
     iter_node = floor(context_total_path / G.number_of_edges())
     iter_com = floor(context_total_path / G.number_of_edges())
-    # iter_com = 1
-    # alpha, beta = alpha_betas
+    log.info(f'using iter_com:{iter_com}\titer_node: {iter_node}')
 
-    for i in range(num_iter):
-        for (alpha, beta), k in zip(alpha_betas, ks):
+    for (alpha, beta), k in zip(alpha_betas, ks):
+        log.info('\n_______________________________________\n')
+        log.info(f'TRAINING \t\talpha:{alpha}\tbeta:{beta}\tk:{k}')
+
+        for i in range(num_iter):
+            log.info(f'\t\tITER-{i}\n')
             com_max_iter = 0
-            while not com_learner.converged:  # TODO does not work. how should the for-order of iter, (alpha, beta, k), com_max_iter be?
+
+            while not com_learner.converged or com_max_iter == 0:
                 com_max_iter += 10  # TODO use increase as setting and only log on converge
+                log.info(f"->com_max_iter={com_max_iter}")
 
-                print(f"===com_max_iter=== {com_max_iter}")
-
-                log.info('\n_______________________________________\n')
-                log.info(f'\t\tITER-{i}\n')
                 model = model.load_model(f"{output_file}_pre-training")
                 model.reset_communities_weights(k)
-                log.info(f'using alpha:{alpha}\tbeta:{beta}\titer_com:{iter_com}\titer_node: {iter_node}')
                 start_time = timeit.default_timer()
 
                 com_learner.fit(model,
@@ -145,7 +145,6 @@ if __name__ == "__main__":
                                    chunksize=batch_size)
 
                 log.info('time: %.2fs' % (timeit.default_timer() - start_time))
-                # log.info(model.centroid)
                 save_embedding(model.node_embedding, model.vocab,
                                file_name=f"{output_file}_alpha-{alpha}_beta-{beta}_ws-{window_size}_neg-{negative}_lr-{lr}_icom-{iter_com}_ind-{iter_node}_k-{model.k}_ds-{down_sampling}")
 
@@ -157,16 +156,16 @@ if __name__ == "__main__":
                                                         plot_name=f"k{k}_i{i}",
                                                         save=True)
 
-    # ### print model
-    node_classification = model.classify_nodes()
-    print("model:\n",
-          "  model.node_embedding: ", model.node_embedding, "\n",
-          "  model.context_embedding: ", model.context_embedding, "\n",
-          "  model.centroid: ", model.centroid, "\n",
-          "  model.covariance_mat: ", model.covariance_mat, "\n",
-          "  model.inv_covariance_mat: ", model.inv_covariance_mat, "\n",
-          "  model.pi: ", model.pi, "\n",
-          "=>node_classification: ", node_classification, "\n", )
+        # ### print model
+        node_classification = model.classify_nodes()
+        print("model:\n",
+              "  model.node_embedding: ", model.node_embedding, "\n",
+              "  model.context_embedding: ", model.context_embedding, "\n",
+              "  model.centroid: ", model.centroid, "\n",
+              "  model.covariance_mat: ", model.covariance_mat, "\n",
+              "  model.inv_covariance_mat: ", model.inv_covariance_mat, "\n",
+              "  model.pi: ", model.pi, "\n",
+              "=>node_classification: ", node_classification, "\n", )
 
     # ### write predictions to labels_pred.txt
     # save com_learner.g_mixture to file
