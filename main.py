@@ -4,6 +4,7 @@ import os
 import random
 from multiprocessing import cpu_count
 import logging as log
+import itertools
 import joblib
 
 import numpy as np
@@ -110,7 +111,7 @@ if __name__ == "__main__":
     iter_com = floor(context_total_path / G.number_of_edges())
     log.info(f'using iter_com:{iter_com}\titer_node: {iter_node}')
 
-    for (alpha, beta), k in zip(alpha_betas, ks):
+    for (alpha, beta), k in itertools.product(alpha_betas, ks):
         log.info('\n_______________________________________\n')
         log.info(f'TRAINING \t\talpha:{alpha}\tbeta:{beta}\tk:{k}')
         model = model.load_model(f"{output_file}_pre-training")
