@@ -112,7 +112,7 @@ if __name__ == "__main__":
     # alpha, beta = alpha_betas
 
     for i in range(num_iter):
-        for _, ((alpha, beta), k) in enumerate(alpha_betas, ks):
+        for (alpha, beta), k in zip(alpha_betas, ks):
             com_max_iter = 0
             while not com_learner.converged:
                 com_max_iter += 10  # TODO use increase as setting and only log on converge
