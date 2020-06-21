@@ -156,6 +156,9 @@ class Model(object):
 
         log.info('Max value in the negative sampling table: {}'.format(max(self.table)))
 
+    def classify_nodes(self, ):
+        return np.argmax(self.pi, axis=1)
+
     def save(self, file_name, path='data'):
         if not exists(path):
             makedirs(path)
