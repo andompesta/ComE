@@ -123,7 +123,7 @@ if __name__ == "__main__":
             start_time = timeit.default_timer()
 
             while not com_learner.converged or com_max_iter == 0:
-                com_max_iter += 1  # TODO use increase as setting and only log on converge
+                com_max_iter += 10  # TODO use increase as setting and only log on converge
                 log.info(f"->com_max_iter={com_max_iter}")
 
                 com_learner.fit(model,
@@ -137,7 +137,7 @@ if __name__ == "__main__":
                                                         labels=model.classify_nodes(),
                                                         means=com_learner.g_mixture.means_,
                                                         covariances=com_learner.g_mixture.covariances_,
-                                                        plot_name=f"k{k}_i{i}_{com_max_iter}",
+                                                        plot_name=f"k{k}_i{i}_{com_max_iter.zfill(3)}",
                                                         save=True)
 
             node_learner.train(model,
