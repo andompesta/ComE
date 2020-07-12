@@ -126,37 +126,42 @@ if __name__ == "__main__":
                 com_max_iter += 1  # TODO use increase as setting and only log on converge
                 log.info(f"->com_max_iter={com_max_iter}")
 
-                # TODO ???
                 com_learner.fit(model,
                                 reg_covar=reg_covar,
                                 n_init=10,
                                 max_iter=com_max_iter,
                                 weight_concentration_prior=weight_concentration_prior)
-                # TODO ???
-                node_learner.train(model,
-                                   edges=edges,
-                                   iter=iter_node,
-                                   chunksize=batch_size)
-                # TODO ???
-                com_learner.train(G.nodes(), model, beta, chunksize=batch_size, iter=iter_com)
-                # TODO ???
-                cont_learner.train(model,
-                                   paths=graph_utils.combine_files_iter(walk_files),
-                                   total_nodes=context_total_path,
-                                   alpha=alpha,
-                                   chunksize=batch_size)
 
-                log.info('time: %.2fs' % (timeit.default_timer() - start_time))
-                save_embedding(model.node_embedding, model.vocab,
-                               file_name=f"{output_file}_alpha-{alpha}_beta-{beta}_ws-{window_size}_neg-{negative}_lr-{lr}_icom-{iter_com}_ind-{iter_node}_k-{model.k}_ds-{down_sampling}")
-
-                # DEBUG plot after each iter
+                # DEBUG plot after each GMM/BGMM iter
                 plot_utils.node_space_plot_2d_ellipsoid(model.node_embedding,
                                                         labels=model.classify_nodes(),
                                                         means=com_learner.g_mixture.means_,
                                                         covariances=com_learner.g_mixture.covariances_,
                                                         plot_name=f"k{k}_i{i}_{com_max_iter}",
                                                         save=True)
+
+            node_learner.train(model,
+                               edges=edges,
+                               iter=iter_node,
+                               chunksize=batch_size)
+            com_learner.train(G.nodes(), model, beta, chunksize=batch_size, iter=iter_com)
+            cont_learner.train(model,
+                               paths=graph_utils.combine_files_iter(walk_files),
+                               total_nodes=context_total_path,
+                               alpha=alpha,
+                               chunksize=batch_size)
+
+            log.info('time: %.2fs' % (timeit.default_timer() - start_time))
+            save_embedding(model.node_embedding, model.vocab,
+                           file_name=f"{output_file}_alpha-{alpha}_beta-{beta}_ws-{window_size}_neg-{negative}_lr-{lr}_icom-{iter_com}_ind-{iter_node}_k-{model.k}_ds-{down_sampling}")
+
+            # DEBUG plot after each ComE iter
+            plot_utils.node_space_plot_2d_ellipsoid(model.node_embedding,
+                                                    labels=model.classify_nodes(),
+                                                    means=com_learner.g_mixture.means_,
+                                                    covariances=com_learner.g_mixture.covariances_,
+                                                    plot_name=f"k{k}_i{i}",
+                                                    save=True)
 
         # ### print model
         node_classification = model.classify_nodes()
