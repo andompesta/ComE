@@ -137,7 +137,7 @@ if __name__ == "__main__":
                                                         labels=model.classify_nodes(),
                                                         means=com_learner.g_mixture.means_,
                                                         covariances=com_learner.g_mixture.covariances_,
-                                                        plot_name=f"k{k}_i{i}_{com_max_iter.zfill(3)}",
+                                                        plot_name=f"k{k}_i{i}_{com_max_iter:03}",
                                                         save=True)
 
             node_learner.train(model,
