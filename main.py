@@ -120,12 +120,12 @@ if __name__ == "__main__":
         for i in range(num_iter):
             log.info(f'\t\tITER-{i}\n')
             com_max_iter = 0
+            start_time = timeit.default_timer()
 
             while not com_learner.converged or com_max_iter == 0:
                 com_max_iter += 1  # TODO use increase as setting and only log on converge
                 log.info(f"->com_max_iter={com_max_iter}")
 
-                start_time = timeit.default_timer()
                 # TODO ???
                 com_learner.fit(model,
                                 reg_covar=reg_covar,
