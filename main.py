@@ -25,6 +25,9 @@ import networkx as nx
 
 log.basicConfig(format='%(asctime).19s %(levelname)s %(filename)s: %(lineno)s %(message)s', level=log.DEBUG)
 
+# set random number generator seed
+np.random.seed(2020)
+
 p = psutil.Process(os.getpid())
 try:
     p.set_cpu_affinity(list(range(cpu_count())))
@@ -123,14 +126,15 @@ if __name__ == "__main__":
             start_time = timeit.default_timer()
 
             while not com_learner.converged or com_max_iter == 0:
-                com_max_iter += 10  # TODO use increase as setting and only log on converge
+                com_max_iter += 1  # TODO use increase as setting and only log on converge
                 log.info(f"->com_max_iter={com_max_iter}")
 
-                com_learner.fit(model,
-                                reg_covar=reg_covar,
-                                n_init=10,
-                                max_iter=com_max_iter,
-                                weight_concentration_prior=weight_concentration_prior)
+                com_learner.reset_mixture(model,
+                                          reg_covar=reg_covar,
+                                          n_init=10,
+                                          max_iter=com_max_iter,
+                                          weight_concentration_prior=weight_concentration_prior)
+                com_learner.fit(model)
 
                 # DEBUG plot after each GMM/BGMM iter
                 plot_utils.node_space_plot_2d_ellipsoid(model.node_embedding,
