@@ -209,11 +209,8 @@ if __name__ == "__main__":
 
         # ### Animation
         if animate:
-            print("ANIM_ARTISTS:", anim_artists)
             anim = ArtistAnimation(anim_fig, anim_artists, interval=0.5, blit=True, repeat=False)
             plt.close(anim._fig)
-            # export as mp4:
-            anim.save("./plots/animation.mp4")
             # export animation as gif:
             # you may need to install "imagemagick" (ex.: brew install imagemagick)
             anim.save('./plots/animation.gif', writer='imagemagick', fps=0.5)
