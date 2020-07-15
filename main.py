@@ -211,9 +211,11 @@ if __name__ == "__main__":
         if animate:
             anim = ArtistAnimation(anim_fig, anim_artists, interval=0.5, blit=True, repeat=False)
             plt.close(anim._fig) #TODO not wokring in PyCharm
+            # export as html
+            anim.save("./plots/animation.html")
             # export animation as gif:
             # you may need to install "imagemagick" (ex.: brew install imagemagick)
-            anim.save('./plots/animation.gif', writer='imagemagick', fps=0.5)
+            #anim.save('./plots/animation.gif', writer='imagemagick', fps=0.5)
 
         # ### write predictions to labels_pred.txt
         # save com_learner.g_mixture to file
