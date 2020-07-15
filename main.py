@@ -122,7 +122,7 @@ if __name__ == "__main__":
 
     anim_artists = []
     anim_fig = plt.figure(figsize=(8, 8))
-    anim_ax = anim_fig.add_subplot()
+    anim_ax = anim_fig.add_subplot(111)
 
     for (alpha, beta), k in product(alpha_betas, ks):
         log.info('\n_______________________________________\n')
