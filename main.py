@@ -23,9 +23,9 @@ import utils.plot_utils as plot_utils
 import timeit
 import networkx as nx
 
+import matplotlib
 import matplotlib.pyplot as plt
 from matplotlib.animation import ArtistAnimation
-from matplotlib import colors as mcolors
 
 log.basicConfig(format='%(asctime).19s %(levelname)s %(filename)s: %(lineno)s %(message)s', level=log.DEBUG)
 
@@ -212,7 +212,7 @@ if __name__ == "__main__":
             anim = ArtistAnimation(anim_fig, anim_artists, interval=0.5, blit=True, repeat=False)
             plt.close(anim._fig) #TODO not wokring in PyCharm
             # export as html
-            anim.save("./plots/animation.html")
+            anim.save("./plots/animation.gif", writer=matplotlib.animation.ImageMagickWriter)
             # export animation as gif:
             # you may need to install "imagemagick" (ex.: brew install imagemagick)
             #anim.save('./plots/animation.gif', writer='imagemagick', fps=0.5)
