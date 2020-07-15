@@ -121,27 +121,10 @@ def node_space_plot_2d_ellipsoid(embedding,
     for node in data:
         ax.text(node[0], node[1], '%s' % (str(int(node[2]))), size=10)
 
-    if (means is not None) and (covariances is not None):
-        for i, (mean, covar) in enumerate(zip(means, covariances)):
-            # as the DP will not use every component it has access to
-            # unless it needs it, we shouldn't plot the redundant
-            # components.
-            if not np.any(labels == i):
-                continue
-            # computations for showing ellipses
-            v, w = np.linalg.eigh(2.5 * covar)
-            v = 2. * np.sqrt(2.) * np.sqrt(v)
-            u = w[0] / np.linalg.norm(w[0])
-
-            transparency = 0.45
-
-            # Plot an ellipse to show the Gaussian component
-            angle = np.arctan(u[1] / u[0])
-            angle = 180. * angle / np.pi  # convert to degrees
-            ell = mpl.patches.Ellipse(mean, v[0], v[1], 180. + angle, fill=False, linewidth=2.)
-            ell.set_clip_box(ax.bbox)
-            ell.set_alpha(transparency)
-            ax.add_artist(ell)
+    ellipses = get_ellipses_artists(labels=labels, means=means, covariances=covariances)
+    for ellipse in ellipses:
+        ellipse.set_clip_box(ax.bbox)
+        ax.add_artist(ellipse)
 
     if grid:
         x_max, x_min = 0.5, -1
@@ -177,6 +160,36 @@ def node_space_plot_2d_ellipsoid(embedding,
 
     plt.clf()
     plt.close()
+
+
+def get_ellipses_artists(labels=None,
+                         means=None,
+                         covariances=None):
+    artists = []
+    if (means is not None) and (covariances is not None):
+        for i, (mean, covar) in enumerate(zip(means, covariances)):
+            # as the DP will not use every component it has access to
+            # unless it needs it, we shouldn't plot the redundant
+            # components.
+            if not np.any(labels == i):
+                continue
+            # computations for showing ellipses
+            v, w = np.linalg.eigh(2.5 * covar)
+            v = 2. * np.sqrt(2.) * np.sqrt(v)
+            u = w[0] / np.linalg.norm(w[0])
+
+            transparency = 0.45
+
+            # Plot an ellipse to show the Gaussian component
+            angle = np.arctan(u[1] / u[0])
+            angle = 180. * angle / np.pi  # convert to degrees
+            ellipse = mpl.patches.Ellipse(mean, v[0], v[1], 180. + angle, fill=False, linewidth=2.)
+            # ellipse.set_clip_box(ax.bbox)
+            ellipse.set_alpha(transparency)
+
+            artists.append(ellipse)
+
+    return artists
 
 
 def bar_plot_bgmm_weights(weights,

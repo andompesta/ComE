@@ -23,6 +23,10 @@ import utils.plot_utils as plot_utils
 import timeit
 import networkx as nx
 
+import matplotlib.pyplot as plt
+from matplotlib.animation import ArtistAnimation
+from matplotlib import colors as mcolors
+
 log.basicConfig(format='%(asctime).19s %(levelname)s %(filename)s: %(lineno)s %(message)s', level=log.DEBUG)
 
 # set random number generator seed
@@ -38,6 +42,8 @@ except AttributeError:
         pass
 
 if __name__ == "__main__":
+
+    animate = True
 
     number_walks = 10  # γ: number of walks for each node
     walk_length = 80  # l: length of each walk
@@ -114,6 +120,10 @@ if __name__ == "__main__":
     iter_com = floor(context_total_path / G.number_of_edges())
     log.info(f'using iter_com:{iter_com}\titer_node: {iter_node}')
 
+    anim_artists = []
+    anim_fig = plt.figure(figsize=(8, 8))
+    anim_ax = anim_fig.add_subplot()
+
     for (alpha, beta), k in product(alpha_betas, ks):
         log.info('\n_______________________________________\n')
         log.info(f'TRAINING \t\talpha:{alpha}\tbeta:{beta}\tk:{k}')
@@ -136,13 +146,32 @@ if __name__ == "__main__":
                                           weight_concentration_prior=weight_concentration_prior)
                 com_learner.fit(model)
 
+                # extract parameters
+                # nodes
+                nodes = model.node_embedding
+                # communities
+                labels = model.classify_nodes()
+                means = com_learner.g_mixture.means_
+                covars = com_learner.g_mixture.covariances_
+
                 # DEBUG plot after each GMM/BGMM iter
-                plot_utils.node_space_plot_2d_ellipsoid(model.node_embedding,
-                                                        labels=model.classify_nodes(),
-                                                        means=com_learner.g_mixture.means_,
-                                                        covariances=com_learner.g_mixture.covariances_,
+                plot_utils.node_space_plot_2d_ellipsoid(nodes,
+                                                        labels=labels,
+                                                        means=means,
+                                                        covariances=covars,
                                                         plot_name=f"k{k}_i{i}_{com_max_iter:03}",
                                                         save=True)
+
+                # animation
+                # nodes
+                nodes_scatter = anim_ax.scatter(nodes[:, 0], nodes[:, 1], 20, c=labels)
+                # communities
+                ellipses = plot_utils.get_ellipses_artists(labels=labels, means=means, covariances=covars)
+                for ellipse in ellipses:
+                    ellipse.set_clip_box(anim_ax.bbox)
+                    anim_ax.add_artist(ellipse)
+                # append artists
+                anim_artists.append(ellipses + [nodes_scatter])
 
             node_learner.train(model,
                                edges=edges,
@@ -177,6 +206,17 @@ if __name__ == "__main__":
               "  model.inv_covariance_mat: ", model.inv_covariance_mat, "\n",
               "  model.pi: ", model.pi, "\n",
               "=>node_classification: ", node_classification, "\n", )
+
+        # ### Animation
+        if animate:
+            print("ANIM_ARTISTS:", anim_artists)
+            anim = ArtistAnimation(anim_fig, anim_artists, interval=0.5, blit=True, repeat=False)
+            plt.show()
+            # export as mp4:
+            #anim.save("./plots/animation.mp4")
+            # export animation as gif:
+            # you may need to install "imagemagick" (ex.: brew install imagemagick)
+            #anim.save('./plots/animation.gif', writer='imagemagick', fps=0.5)
 
         # ### write predictions to labels_pred.txt
         # save com_learner.g_mixture to file
