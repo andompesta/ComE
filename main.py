@@ -163,6 +163,10 @@ if __name__ == "__main__":
                                                         save=True)
 
                 # animation
+                # counter
+                counter = anim_ax.text(0.05, 0.95, '', fontsize=16, horizontalalignment='left',
+                                       verticalalignment='top', transform=anim_ax.transAxes)
+                counter.set_text(str(i))
                 # nodes
                 nodes_scatter = anim_ax.scatter(nodes[:, 0], nodes[:, 1], 20, c=labels)
                 # communities
@@ -171,7 +175,7 @@ if __name__ == "__main__":
                     ellipse.set_clip_box(anim_ax.bbox)
                     anim_ax.add_artist(ellipse)
                 # append artists
-                anim_artists.append(ellipses + [nodes_scatter])
+                anim_artists.append(ellipses + [nodes_scatter, counter])
 
             node_learner.train(model,
                                edges=edges,
