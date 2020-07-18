@@ -12,6 +12,8 @@ import psutil
 from math import floor
 
 from sklearn import metrics
+from sklearn.utils._testing import ignore_warnings
+from sklearn.exceptions import ConvergenceWarning
 
 from ADSCModel.model import Model
 from ADSCModel.context_embeddings import Context2Vec
@@ -144,7 +146,9 @@ if __name__ == "__main__":
                                           n_init=10,
                                           max_iter=com_max_iter,
                                           weight_concentration_prior=weight_concentration_prior)
-                com_learner.fit(model)
+
+                with ignore_warnings(category=ConvergenceWarning):
+                    com_learner.fit(model)
 
                 # extract parameters
                 # nodes
