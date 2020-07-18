@@ -59,7 +59,7 @@ class Community2Vec(object):
                                            covariance_type='full',
                                            n_init=n_init,
                                            max_iter=max_iter,
-                                           #random_state=72,
+                                           #random_state=72,  # TODO: need to set random_state here or is global sk_learn random_state enough?
                                            init_params='random',
             )
 
@@ -70,7 +70,7 @@ class Community2Vec(object):
                                                    covariance_type='full',
                                                    n_init=n_init,
                                                    max_iter=max_iter,
-                                                   #random_state=72,
+                                                   #random_state=72,  # TODO: need to set random_state here or is global sk_learn random_state enough?
                                                    init_params='random',
             )
 
