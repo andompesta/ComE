@@ -211,7 +211,7 @@ if __name__ == "__main__":
             #anim.to_html5_video()
             # export animation as gif:
             # you may need to install "imagemagick" (ex.: brew install imagemagick)
-            anim.save('./plots/animation.gif', writer='imagemagick', fps=0.5)
+            anim.save('./plots/animation.gif', writer='imagemagick')
 
         # ### write predictions to labels_pred.txt
         # save com_learner.g_mixture to file
