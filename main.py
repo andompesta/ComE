@@ -164,7 +164,6 @@ if __name__ == "__main__":
 
                 # animation
                 # counter
-                com_iter = com_learner.g_mixture.
                 counter = anim_ax.text(0.05, 0.95, '', fontsize=16, horizontalalignment='left',
                                        verticalalignment='top', transform=anim_ax.transAxes)
                 counter.set_text(f'{i}.{com_learner.n_iter}')
