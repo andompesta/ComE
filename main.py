@@ -130,7 +130,7 @@ if __name__ == "__main__":
         log.info('\n_______________________________________\n')
         log.info(f'TRAINING \t\talpha:{alpha}\tbeta:{beta}\tk:{k}')
         model = model.load_model(f"{output_file}_pre-training")
-        model.reset_communities_weights(k)  # TODO can this be done here? compare with other ComE repos on GitHub
+        model.reset_communities_weights(k) 
 
         for i in range(num_iter):
             log.info(f'\t\tITER-{i}\n')
