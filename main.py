@@ -120,9 +120,9 @@ if __name__ == "__main__":
     iter_com = floor(context_total_path / G.number_of_edges())
     log.info(f'using iter_com:{iter_com}\titer_node: {iter_node}')
 
-    anim_artists = []
     anim_fig = plt.figure(figsize=(8, 8))
     anim_ax = anim_fig.add_subplot(111)
+    anim_artists = []
 
     for (alpha, beta), k in product(alpha_betas, ks):
         log.info('\n_______________________________________\n')
