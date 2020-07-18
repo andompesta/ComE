@@ -192,6 +192,34 @@ def get_ellipses_artists(labels=None,
     return artists
 
 
+def animate_step(ax, model, i=None, i_com=None, converged=False):
+    # extract parameters
+    # nodes
+    nodes = model.node_embedding
+    # communities
+    labels = model.classify_nodes()
+    means = model.centroid
+    covars = model.covariance_mat
+
+    # animation
+    # counter
+    counter = ax.text(0.05, 0.95, f"{i}.{i_com}{' converged' if converged else ''}", fontsize=16, horizontalalignment='left',
+                      verticalalignment='top', transform=ax.transAxes)
+    # nodes
+    nodes_scatter = ax.scatter(nodes[:, 0], nodes[:, 1], 20, c=labels, marker="o")
+    nodes_ids = []
+    for (i_node, node) in enumerate(nodes):
+        nodes_ids.append(ax.text(node[0], node[1], str(i_node), size=12))
+    # communities
+    ellipses = get_ellipses_artists(labels=labels, means=means, covariances=covars)
+    for ellipse in ellipses:
+        ellipse.set_clip_box(ax.bbox)
+        ax.add_artist(ellipse)
+
+    # return artists
+    return ellipses + nodes_ids + [nodes_scatter, counter]
+
+
 def bar_plot_bgmm_weights(weights,
                           path="./plots",
                           plot_name=None,

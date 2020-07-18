@@ -130,7 +130,7 @@ if __name__ == "__main__":
         log.info('\n_______________________________________\n')
         log.info(f'TRAINING \t\talpha:{alpha}\tbeta:{beta}\tk:{k}')
         model = model.load_model(f"{output_file}_pre-training")
-        model.reset_communities_weights(k) 
+        model.reset_communities_weights(k)
 
         for i in range(num_iter):
             log.info(f'\t\tITER-{i}\n')
@@ -156,14 +156,6 @@ if __name__ == "__main__":
                 else:
                     log.info(f'iter {i}.{com_learner.n_iter} converged!')
 
-                # extract parameters
-                # nodes
-                nodes = model.node_embedding
-                # communities
-                labels = model.classify_nodes()
-                means = com_learner.g_mixture.means_
-                covars = com_learner.g_mixture.covariances_
-
                 # DEBUG plot after each community iteration
                 '''plot_utils.node_space_plot_2d_ellipsoid(nodes,
                                                         labels=labels,
@@ -172,22 +164,12 @@ if __name__ == "__main__":
                                                         plot_name=f"k{k}_i{i}_{com_max_iter:03}",
                                                         save=True)'''
 
-                # animation
-                # counter
-                counter = anim_ax.text(0.05, 0.95, f'{i}.{com_learner.n_iter}', fontsize=16, horizontalalignment='left',
-                                       verticalalignment='top', transform=anim_ax.transAxes)
-                # nodes
-                nodes_scatter = anim_ax.scatter(nodes[:, 0], nodes[:, 1], 20, c=labels, marker="o")
-                nodes_ids = []
-                for (i_node, node) in enumerate(nodes):
-                    nodes_ids.append(anim_ax.text(node[0], node[1], str(i_node), size=12))
-                # communities
-                ellipses = plot_utils.get_ellipses_artists(labels=labels, means=means, covariances=covars)
-                for ellipse in ellipses:
-                    ellipse.set_clip_box(anim_ax.bbox)
-                    anim_ax.add_artist(ellipse)
-                # append artists
-                anim_artists.append(ellipses + nodes_ids + [nodes_scatter, counter])
+                artists_step = plot_utils.animate_step(anim_ax,
+                                                       model,
+                                                       i=i,
+                                                       i_com=com_learner.n_iter,
+                                                       converged=com_learner.converged)
+                anim_artists.append(artists_step)
 
             node_learner.train(model,
                                edges=edges,
