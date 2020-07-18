@@ -180,7 +180,7 @@ if __name__ == "__main__":
                 nodes_scatter = anim_ax.scatter(nodes[:, 0], nodes[:, 1], 20, c=labels, marker="o")
                 nodes_ids = []
                 for (i_node, node) in enumerate(nodes):
-                    nodes_ids.append(anim_ax.text(node[0], node[1], str(i_node), size=10))
+                    nodes_ids.append(anim_ax.text(node[0], node[1], str(i_node), size=12))
                 # communities
                 ellipses = plot_utils.get_ellipses_artists(labels=labels, means=means, covariances=covars)
                 for ellipse in ellipses:
