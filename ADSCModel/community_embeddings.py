@@ -131,3 +131,10 @@ class Community2Vec(object):
             return self.g_mixture.converged_
         else:
             return False
+
+    @property
+    def n_iter(self):
+        if self.g_mixture:
+            return self.g_mixture.n_iter_
+        else:
+            return '?'

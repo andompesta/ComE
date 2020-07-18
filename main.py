@@ -164,9 +164,10 @@ if __name__ == "__main__":
 
                 # animation
                 # counter
+                com_iter = com_learner.g_mixture.
                 counter = anim_ax.text(0.05, 0.95, '', fontsize=16, horizontalalignment='left',
                                        verticalalignment='top', transform=anim_ax.transAxes)
-                counter.set_text(str(i))
+                counter.set_text(f'{i}.{com_learner.n_iter}')
                 # nodes
                 nodes_scatter = anim_ax.scatter(nodes[:, 0], nodes[:, 1], 20, c=labels)
                 # communities
