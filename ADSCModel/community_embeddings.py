@@ -41,7 +41,7 @@ class Community2Vec(object):
         :param model: model injected to add the mixture parameters
         """
 
-        log.info("Fitting: {} communities".format(model.k))
+        #log.info("Fitting: {} communities".format(model.k))
         self.g_mixture.fit(model.node_embedding)
 
         model.centroid = self.g_mixture.means_.astype(np.float32)

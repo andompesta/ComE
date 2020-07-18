@@ -151,10 +151,10 @@ if __name__ == "__main__":
                     com_learner.fit(model)
 
                 # community converged?
-                if com_learner.converged:
-                    print(f'iter {i}.{com_learner.n_iter} not converge.')
+                if not com_learner.converged:
+                    log.info(f'iter {i}.{com_learner.n_iter} did not converge.')
                 else:
-                    print(f'iter {i}.{com_learner.n_iter} converged!')
+                    log.info(f'iter {i}.{com_learner.n_iter} converged!')
 
                 # extract parameters
                 # nodes
