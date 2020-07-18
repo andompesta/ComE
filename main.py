@@ -150,6 +150,12 @@ if __name__ == "__main__":
                 with ignore_warnings(category=ConvergenceWarning):
                     com_learner.fit(model)
 
+                # community converged?
+                if com_learner.converged:
+                    print(f'iter {i}.{com_learner.n_iter} not converge.')
+                else:
+                    print(f'iter {i}.{com_learner.n_iter} converged!')
+
                 # extract parameters
                 # nodes
                 nodes = model.node_embedding
