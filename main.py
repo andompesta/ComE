@@ -154,7 +154,7 @@ if __name__ == "__main__":
                 means = com_learner.g_mixture.means_
                 covars = com_learner.g_mixture.covariances_
 
-                # DEBUG plot after each GMM/BGMM iter
+                # DEBUG plot after each community iteration
                 '''plot_utils.node_space_plot_2d_ellipsoid(nodes,
                                                         labels=labels,
                                                         means=means,
@@ -192,7 +192,7 @@ if __name__ == "__main__":
             save_embedding(model.node_embedding, model.vocab,
                            file_name=f"{output_file}_alpha-{alpha}_beta-{beta}_ws-{window_size}_neg-{negative}_lr-{lr}_icom-{iter_com}_ind-{iter_node}_k-{model.k}_ds-{down_sampling}")
 
-            # DEBUG plot after each ComE iter
+            # DEBUG plot after each ComE iteration
             '''plot_utils.node_space_plot_2d_ellipsoid(model.node_embedding,
                                                     labels=model.classify_nodes(),
                                                     means=com_learner.g_mixture.means_,
