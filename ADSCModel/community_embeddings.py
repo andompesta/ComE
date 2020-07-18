@@ -58,7 +58,10 @@ class Community2Vec(object):
                                            reg_covar=reg_covar,
                                            covariance_type='full',
                                            n_init=n_init,
-                                           max_iter=max_iter)
+                                           max_iter=max_iter,
+                                           #random_state=72,
+                                           init_params='random',
+            )
 
         def get_bgmm():
             return mixture.BayesianGaussianMixture(n_components=k,
@@ -66,7 +69,10 @@ class Community2Vec(object):
                                                    reg_covar=reg_covar,
                                                    covariance_type='full',
                                                    n_init=n_init,
-                                                   max_iter=max_iter)
+                                                   max_iter=max_iter,
+                                                   #random_state=72,
+                                                   init_params='random',
+            )
 
         if self.model_type == "BGMM":
             return get_bgmm()
