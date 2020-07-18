@@ -34,6 +34,7 @@ class Community2Vec(object):
         :param weight_concentration_prior: dirichlet concentration of each component (gamma). default: 1/n_components
         """
         self.g_mixture = self.get_mixture(model.k, reg_covar, n_init, max_iter, weight_concentration_prior)
+        self._update_model(model)
 
     def fit(self, model):
         """
@@ -43,7 +44,9 @@ class Community2Vec(object):
 
         #log.info("Fitting: {} communities".format(model.k))
         self.g_mixture.fit(model.node_embedding)
+        self._update_model(model)
 
+    def _update_model(self, model):
         model.centroid = self.g_mixture.means_.astype(np.float32)
         model.covariance_mat = self.g_mixture.covariances_.astype(np.float32)
         model.inv_covariance_mat = self.g_mixture.precisions_.astype(np.float32)
