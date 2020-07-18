@@ -214,6 +214,7 @@ if __name__ == "__main__":
         # ### Animation
         if animate:
             anim = ArtistAnimation(anim_fig, anim_artists, interval=0.5, blit=True, repeat=False)
+            #anim.to_html5_video()
             # export animation as gif:
             # you may need to install "imagemagick" (ex.: brew install imagemagick)
             anim.save('./plots/animation.gif', writer='imagemagick', fps=0.5)
