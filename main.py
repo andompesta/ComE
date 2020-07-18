@@ -178,15 +178,16 @@ if __name__ == "__main__":
                                        verticalalignment='top', transform=anim_ax.transAxes)
                 # nodes
                 nodes_scatter = anim_ax.scatter(nodes[:, 0], nodes[:, 1], 20, c=labels, marker="o")
+                nodes_ids = []
                 for (i_node, node) in enumerate(nodes):
-                    anim_ax.text(node[0], node[1], str(i_node), size=10)
+                    nodes_ids.append(anim_ax.text(node[0], node[1], str(i_node), size=10))
                 # communities
                 ellipses = plot_utils.get_ellipses_artists(labels=labels, means=means, covariances=covars)
                 for ellipse in ellipses:
                     ellipse.set_clip_box(anim_ax.bbox)
                     anim_ax.add_artist(ellipse)
                 # append artists
-                anim_artists.append(ellipses + [nodes_scatter, counter])
+                anim_artists.append(ellipses + nodes_ids + [nodes_scatter, counter])
 
             node_learner.train(model,
                                edges=edges,
