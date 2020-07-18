@@ -150,11 +150,22 @@ if __name__ == "__main__":
                 with ignore_warnings(category=ConvergenceWarning):
                     com_learner.fit(model)
 
+                def animate_model():
+                    artists_step = plot_utils.animate_step(anim_ax,
+                                                           model,
+                                                           i=i,
+                                                           i_com=com_learner.n_iter,
+                                                           converged=com_learner.converged)
+                    anim_artists.append(artists_step)
+
                 # community converged?
                 if not com_learner.converged:
                     log.info(f'iter {i}.{com_learner.n_iter} did not converge.')
+                    animate_model()
                 else:
                     log.info(f'iter {i}.{com_learner.n_iter} converged!')
+                    animate_model()
+                    animate_model()  # if converged, animate twice
 
                 # DEBUG plot after each community iteration
                 '''plot_utils.node_space_plot_2d_ellipsoid(nodes,
@@ -163,13 +174,6 @@ if __name__ == "__main__":
                                                         covariances=covars,
                                                         plot_name=f"k{k}_i{i}_{com_max_iter:03}",
                                                         save=True)'''
-
-                artists_step = plot_utils.animate_step(anim_ax,
-                                                       model,
-                                                       i=i,
-                                                       i_com=com_learner.n_iter,
-                                                       converged=com_learner.converged)
-                anim_artists.append(artists_step)
 
             node_learner.train(model,
                                edges=edges,
