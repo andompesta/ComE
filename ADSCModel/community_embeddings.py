@@ -34,7 +34,7 @@ class Community2Vec(object):
         :param weight_concentration_prior: dirichlet concentration of each component (gamma). default: 1/n_components
         """
         self.g_mixture = self.get_mixture(model.k, reg_covar, n_init, max_iter, weight_concentration_prior)
-        self._update_model(model)
+        #self._update_model(model) TODO: how to get mean and covar for iter=0 (init values)?
 
     def fit(self, model):
         """
