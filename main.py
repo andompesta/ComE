@@ -167,7 +167,9 @@ if __name__ == "__main__":
                 counter = anim_ax.text(0.05, 0.95, f'{i}.{com_learner.n_iter}', fontsize=16, horizontalalignment='left',
                                        verticalalignment='top', transform=anim_ax.transAxes)
                 # nodes
-                nodes_scatter = anim_ax.scatter(nodes[:, 0], nodes[:, 1], 20, c=labels)
+                nodes_scatter = anim_ax.scatter(nodes[:, 0], nodes[:, 1], 20, c=labels, marker="o")
+                for (i_node, node) in enumerate(nodes):
+                    anim_ax.text(node[0], node[1], str(i_node), size=10)
                 # communities
                 ellipses = plot_utils.get_ellipses_artists(labels=labels, means=means, covariances=covars)
                 for ellipse in ellipses:
