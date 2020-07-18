@@ -24,16 +24,17 @@ class Community2Vec(object):
         self.model_type = model_type
         self.g_mixture = None
 
-    def reset_mixture(self, model, reg_covar=0, n_init=10, max_iter=1, weight_concentration_prior=None):
+    def reset_mixture(self, model, reg_covar=0, n_init=10, max_iter=1, random_state=None, weight_concentration_prior=None):
         """
         Fit the GMM/BGMM model with the current node embedding and save the result in the model
         :param model: model injected to add the mixture parameters
         :param reg_covar: non-negative regularization added to the diagonal of covariance
         :param n_init: number of initializations to perform
         :param max_iter: maximum number of iterations to run
+        :param random_state: random state to use for reproducibility
         :param weight_concentration_prior: dirichlet concentration of each component (gamma). default: 1/n_components
         """
-        self.g_mixture = self.get_mixture(model.k, reg_covar, n_init, max_iter, weight_concentration_prior)
+        self.g_mixture = self.get_mixture(model.k, reg_covar, n_init, max_iter, random_state, weight_concentration_prior)
         #self._update_model(model) TODO: how to get mean and covar for iter=0 (init values)?
 
     def fit(self, model):
@@ -52,14 +53,14 @@ class Community2Vec(object):
         model.inv_covariance_mat = self.g_mixture.precisions_.astype(np.float32)
         model.pi = self.g_mixture.predict_proba(model.node_embedding).astype(np.float32)
 
-    def get_mixture(self, k, reg_covar=0, n_init=10, max_iter=1, weight_concentration_prior=None):
+    def get_mixture(self, k, reg_covar=0, n_init=10, max_iter=1, random_state=None, weight_concentration_prior=None):
         def get_gmm():
             return mixture.GaussianMixture(n_components=k,
                                            reg_covar=reg_covar,
                                            covariance_type='full',
                                            n_init=n_init,
                                            max_iter=max_iter,
-                                           #random_state=72,  # TODO: need to set random_state here or is global sk_learn random_state enough?
+                                           random_state=random_state,
                                            init_params='random',
             )
 
@@ -70,7 +71,7 @@ class Community2Vec(object):
                                                    covariance_type='full',
                                                    n_init=n_init,
                                                    max_iter=max_iter,
-                                                   #random_state=72,  # TODO: need to set random_state here or is global sk_learn random_state enough?
+                                                   random_state=random_state,
                                                    init_params='random',
             )
 
@@ -81,7 +82,6 @@ class Community2Vec(object):
         else:
             log.warning(f"Unknown ComE model type {self.model_type}. Defaulting to GMM.")
             return get_gmm()
-
 
     def loss(self, nodes, model, beta, chunksize=150):
         """

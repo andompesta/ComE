@@ -32,7 +32,8 @@ from matplotlib.animation import ArtistAnimation
 log.basicConfig(format='%(asctime).19s %(levelname)s %(filename)s: %(lineno)s %(message)s', level=log.DEBUG)
 
 # set random number generator seed
-np.random.seed(2020)
+random_state = 2020
+np.random.seed(random_state)
 
 p = psutil.Process(os.getpid())
 try:
@@ -145,6 +146,7 @@ if __name__ == "__main__":
                                           reg_covar=reg_covar,
                                           n_init=10,
                                           max_iter=com_max_iter,
+                                          random_state=random_state,
                                           weight_concentration_prior=weight_concentration_prior)
 
                 with ignore_warnings(category=ConvergenceWarning):
