@@ -54,8 +54,8 @@ if __name__ == "__main__":
     num_workers = 10  # number of thread
     num_iter = 3  # number of overall iteration
     reg_covar = 0.00001  # regularization coefficient to ensure positive covar
-    input_file = 'karate_club'  # name of the input file
-    output_file = 'karate_club'  # name of the output file
+    input_file = 'Dblp'  # name of the input file
+    output_file = 'Dblp'  # name of the output file
     batch_size = 50
     window_size = 10  # ζ: windows size used to compute the context embedding
     negative = 5  # m: number of negative sample
@@ -70,8 +70,8 @@ if __name__ == "__main__":
     walks_filebase = os.path.join('data', output_file)  # where read/write the sampled path
 
     # CONSTRUCT THE GRAPH
-    # G = graph_utils.load_matfile(os.path.join('./data', input_file, input_file + '.mat'), undirected=True)
-    G = nx.karate_club_graph()  # DEBUG run on karate club graph, make sure to mkdir ./data/karate_club
+    G = graph_utils.load_matfile(os.path.join('./data', input_file, input_file + '.mat'), undirected=True)
+    #G = nx.karate_club_graph()  # DEBUG run on karate club graph, make sure to mkdir ./data/karate_club
 
     # Sampling the random walks for context
     log.info("sampling the paths")
