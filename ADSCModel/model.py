@@ -16,7 +16,8 @@ class Model(object):
     class that keep track of all the parameters used during the learning of the embedding.
     """
 
-    def __init__(self, nodes_degree=None,
+    def __init__(self,
+                 nodes_degree=None,
                  size=2,
                  down_sampling=0,
                  seed=1,
@@ -36,10 +37,21 @@ class Model(object):
         if size % 4 != 0:
             log.warning("consider setting layer size to a multiple of 4 for greater performance")
         self.layer1_size = int(size)
+        
+        # init empty
+        self.vocab = {}
+        self.vocab_size = 0
+        self.node_embedding = []
+        self.context_embedding = []
+        self.centroid = []
+        self.covariance_mat = []
+        self.inv_covariance_mat = []
+        self.pi = []
+        self.table = []
 
         if nodes_degree is not None:
             self.build_vocab_(nodes_degree)
-            #self.ground_true, self.k = load_ground_true(path=path_labels, file_name=input_file)
+            # self.ground_true, self.k = load_ground_true(path=path_labels, file_name=input_file)
             self.k = 0
             # initialize node and context embeddings
             self.make_table()
@@ -155,6 +167,9 @@ class Model(object):
                 d1 += self.vocab[node_idx].count ** power / train_words_pow
 
         log.info('Max value in the negative sampling table: {}'.format(max(self.table)))
+
+    def classify_nodes(self, ):
+        return np.argmax(self.pi, axis=1)
 
     def save(self, file_name, path='data'):
         if not exists(path):

@@ -25,18 +25,21 @@ def load_ground_true(path='data/', file_name=None, multilabel=False):
     '''
     labels = {}
     max = 0
-    with open(path_join(path, file_name + '.labels'), 'r') as file:
-        for line_no, line in enumerate(file):
-            tokens = line.strip().split('\t')
-            node_id = int(tokens[0])
-            label_id = int(tokens[1])
-            if label_id > max:
-                max = label_id
-            if node_id in labels:
-                labels[node_id].append(label_id)
-            else:
-                labels[node_id] = [label_id]
-
+    try:
+        with open(path_join(path, file_name + '.labels'), 'r') as file:
+            for line_no, line in enumerate(file):
+                tokens = line.strip().split('\t')
+                node_id = int(tokens[0])
+                label_id = int(tokens[1])
+                if label_id > max:
+                    max = label_id
+                if node_id in labels:
+                    labels[node_id].append(label_id)
+                else:
+                    labels[node_id] = [label_id]
+    except IOError:
+        print("Warning: Ground truth does not exist: ", path_join(path, file_name + '.labels'))
+        return None, 0
 
     ret = []
     for key in sorted(labels.keys()):

@@ -4,6 +4,7 @@ import os
 import random
 from multiprocessing import cpu_count
 import logging as log
+from itertools import product
 import joblib
 
 import numpy as np
@@ -11,6 +12,8 @@ import psutil
 from math import floor
 
 from sklearn import metrics
+from sklearn.utils._testing import ignore_warnings
+from sklearn.exceptions import ConvergenceWarning
 
 from ADSCModel.model import Model
 from ADSCModel.context_embeddings import Context2Vec
@@ -22,7 +25,15 @@ import utils.plot_utils as plot_utils
 import timeit
 import networkx as nx
 
+import seaborn # fancy matplotlib
+import matplotlib.pyplot as plt
+from matplotlib.animation import ArtistAnimation
+
 log.basicConfig(format='%(asctime).19s %(levelname)s %(filename)s: %(lineno)s %(message)s', level=log.DEBUG)
+
+# set random number generator seed
+random_state = 2020
+np.random.seed(random_state)
 
 p = psutil.Process(os.getpid())
 try:
@@ -35,19 +46,21 @@ except AttributeError:
 
 if __name__ == "__main__":
 
+    animate = True
+
     number_walks = 10  # γ: number of walks for each node
     walk_length = 80  # l: length of each walk
-    representation_size = 128  # size of the embedding
+    representation_size = 2  # size of the embedding
     num_workers = 10  # number of thread
-    num_iter = 2  # number of overall iteration
+    num_iter = 3  # number of overall iteration
     reg_covar = 0.00001  # regularization coefficient to ensure positive covar
-    input_file = 'Dblp'  # name of the input file
-    output_file = 'Dblp'  # name of the output file
+    input_file = 'karate_club'  # name of the input file
+    output_file = 'karate_club'  # name of the output file
     batch_size = 50
     window_size = 10  # ζ: windows size used to compute the context embedding
     negative = 5  # m: number of negative sample
     lr = 0.025  # learning rate
-    alpha_betas = [(10, 5)]  # Trade-off parameter for context/community embedding
+    alpha_betas = [(0.1, 0.1)]  # Trade-off parameter for context/community embedding
     down_sampling = 0.0
 
     come_model_type = "BGMM"  # type of the Community Embedding model: GMM/BGMM
@@ -57,8 +70,8 @@ if __name__ == "__main__":
     walks_filebase = os.path.join('data', output_file)  # where read/write the sampled path
 
     # CONSTRUCT THE GRAPH
-    G = graph_utils.load_matfile(os.path.join('./data', input_file, input_file + '.mat'), undirected=True)
-    # G = nx.karate_club_graph()  # DEBUG run on karate club graph
+    # G = graph_utils.load_matfile(os.path.join('./data', input_file, input_file + '.mat'), undirected=True)
+    G = nx.karate_club_graph()  # DEBUG run on karate club graph
 
     # Sampling the random walks for context
     log.info("sampling the paths")
@@ -107,84 +120,133 @@ if __name__ == "__main__":
     #   EMBEDDING LEARNING    #
     ###########################
     iter_node = floor(context_total_path / G.number_of_edges())
-    iter_com = floor(context_total_path / (G.number_of_edges()))
-    # iter_com = 1
-    # alpha, beta = alpha_betas
+    iter_com = floor(context_total_path / G.number_of_edges())
+    log.info(f'using iter_com:{iter_com}\titer_node: {iter_node}')
 
-    for it in range(num_iter):
-        for alpha, beta in alpha_betas:
-            for k in ks:
-                log.info('\n_______________________________________\n')
-                log.info('\t\tITER-{}\n'.format(it))
-                model = model.load_model("{}_pre-training".format(output_file))
-                model.reset_communities_weights(k)
-                log.info('using alpha:{}\tbeta:{}\titer_com:{}\titer_node: {}'.format(alpha, beta, iter_com, iter_node))
-                start_time = timeit.default_timer()
+    anim_fig = plt.figure(figsize=(8, 8))
+    anim_ax = anim_fig.add_subplot(111)
+    anim_artists = []
 
-                com_learner.fit(model,
-                                weight_concentration_prior=weight_concentration_prior,
-                                reg_covar=reg_covar,
-                                n_init=10)
-                node_learner.train(model,
-                                   edges=edges,
-                                   iter=iter_node,
-                                   chunksize=batch_size)
+    for (alpha, beta), k in product(alpha_betas, ks):
+        log.info('\n_______________________________________\n')
+        log.info(f'TRAINING \t\talpha:{alpha}\tbeta:{beta}\tk:{k}')
+        model = model.load_model(f"{output_file}_pre-training")
+        model.reset_communities_weights(k)
 
-                com_learner.train(G.nodes(), model, beta, chunksize=batch_size, iter=iter_com)
+        for i in range(num_iter):
+            log.info(f'\t\tITER-{i}\n')
+            com_max_iter = 0
+            start_time = timeit.default_timer()
 
-                cont_learner.train(model,
-                                   paths=graph_utils.combine_files_iter(walk_files),
-                                   total_nodes=context_total_path,
-                                   alpha=alpha,
-                                   chunksize=batch_size)
+            while not com_learner.converged or com_max_iter == 0:
+                com_max_iter += 1  # TODO use increase as setting and only log on converge
+                log.info(f"->com_max_iter={com_max_iter}")
 
-                log.info('time: %.2fs' % (timeit.default_timer() - start_time))
-                # log.info(model.centroid)
-                save_embedding(model.node_embedding, model.vocab,
-                               file_name="{}_alpha-{}_beta-{}_ws-{}_neg-{}_lr-{}_icom-{}_ind-{}_k-{}_ds-{}".format(
-                                   output_file,
-                                   alpha,
-                                   beta,
-                                   window_size,
-                                   negative,
-                                   lr,
-                                   iter_com,
-                                   iter_node,
-                                   model.k,
-                                   down_sampling))
+                com_learner.reset_mixture(model,
+                                          reg_covar=reg_covar,
+                                          n_init=10,
+                                          max_iter=com_max_iter,
+                                          random_state=random_state,
+                                          weight_concentration_prior=weight_concentration_prior)
 
-    # ### write predictions to labels_pred.txt
+                with ignore_warnings(category=ConvergenceWarning):
+                    com_learner.fit(model)
 
-    # save com_learner.g_mixture to file
-    joblib.dump(com_learner.g_mixture, './data/g_mixture.joblib')
+                def animate_model():
+                    artists_step = plot_utils.animate_step(anim_ax,
+                                                           model,
+                                                           i=i,
+                                                           i_com=com_learner.n_iter,
+                                                           converged=com_learner.converged)
+                    anim_artists.append(artists_step)
 
-    # using predictions from com_learner.g_mixture with node_embeddings
-    labels_pred = np.array(com_learner.g_mixture.predict(model.node_embedding)).astype(int)
-    np.savetxt('./data/labels_pred.txt', labels_pred)
+                # community converged?
+                if not com_learner.converged:
+                    log.info(f'iter {i}.{com_learner.n_iter} did not converge.')
+                    animate_model()
+                else:
+                    log.info(f'iter {i}.{com_learner.n_iter} converged!')
+                    animate_model()
+                    animate_model()  # if converged, animate twice
 
-    ### NMI
-    labels_true, _ = load_ground_true(path="data/"+input_file, file_name=input_file)
-    print("labels_true: ", labels_true)
-    nmi = metrics.normalized_mutual_info_score(labels_true, labels_pred)
-    print("===NMI=== ", nmi)
+                # DEBUG plot after each community iteration
+                '''plot_utils.node_space_plot_2d_ellipsoid(nodes,
+                                                        labels=labels,
+                                                        means=means,
+                                                        covariances=covars,
+                                                        plot_name=f"k{k}_i{i}_{com_max_iter:03}",
+                                                        save=True)'''
 
-    ### plotting
-    plot_name = str(ks[0])
+            node_learner.train(model,
+                               edges=edges,
+                               iter=iter_node,
+                               chunksize=batch_size)
+            com_learner.train(G.nodes(), model, beta, chunksize=batch_size, iter=iter_com)
+            cont_learner.train(model,
+                               paths=graph_utils.combine_files_iter(walk_files),
+                               total_nodes=context_total_path,
+                               alpha=alpha,
+                               chunksize=batch_size)
 
-    if (representation_size == 2):
-        # graph_plot
-        plot_utils.graph_plot(G, labels=labels_pred, plot_name=plot_name, save=True)
+            log.info('time: %.2fs' % (timeit.default_timer() - start_time))
+            save_embedding(model.node_embedding, model.vocab,
+                           file_name=f"{output_file}_alpha-{alpha}_beta-{beta}_ws-{window_size}_neg-{negative}_lr-{lr}_icom-{iter_com}_ind-{iter_node}_k-{model.k}_ds-{down_sampling}")
 
-        # node_space_plot_2D
-        plot_utils.node_space_plot_2d(model.node_embedding, labels=labels_pred, plot_name=plot_name, save=True)
+            # DEBUG plot after each ComE iteration
+            '''plot_utils.node_space_plot_2d_ellipsoid(model.node_embedding,
+                                                    labels=model.classify_nodes(),
+                                                    means=com_learner.g_mixture.means_,
+                                                    covariances=com_learner.g_mixture.covariances_,
+                                                    plot_name=f"k{k}_i{i}",
+                                                    save=True)'''
 
-        # node_space_plot_2d_ellipsoid
-        plot_utils.node_space_plot_2d_ellipsoid(model.node_embedding,
-                                                labels=labels_pred,
-                                                means=com_learner.g_mixture.means_,
-                                                covariances=com_learner.g_mixture.covariances_,
-                                                plot_name=plot_name,
-                                                save=True)
+        # ### print model
+        node_classification = model.classify_nodes()
+        print("model:\n",
+              "  model.node_embedding: ", model.node_embedding, "\n",
+              "  model.context_embedding: ", model.context_embedding, "\n",
+              "  model.centroid: ", model.centroid, "\n",
+              "  model.covariance_mat: ", model.covariance_mat, "\n",
+              "  model.inv_covariance_mat: ", model.inv_covariance_mat, "\n",
+              "  model.pi: ", model.pi, "\n",
+              "=>node_classification: ", node_classification, "\n", )
 
-    # bar_plot_bgmm_pi
-    plot_utils.bar_plot_bgmm_weights(com_learner.g_mixture.weights_, plot_name=plot_name, save=True)
+        # ### Animation
+        if animate:
+            anim = ArtistAnimation(anim_fig, anim_artists, interval=500, blit=True, repeat=False)
+            #anim.to_html5_video()
+            # export animation as gif:
+            # you may need to install "imagemagick" (ex.: brew install imagemagick)
+            anim.save('./plots/animation.gif', writer='imagemagick')
+
+        # ### write predictions to labels_pred.txt
+        # save com_learner.g_mixture to file
+        joblib.dump(com_learner.g_mixture, './data/g_mixture.joblib')
+        # using predictions from com_learner.g_mixture with node_embeddings
+        np.savetxt('./data/labels_pred.txt', model.classify_nodes())
+
+        # ### NMI
+        labels_true, _ = load_ground_true(path="data/" + input_file, file_name=input_file)
+        print("labels_true: ", labels_true)
+        if labels_true is not None:
+            nmi = metrics.normalized_mutual_info_score(labels_true, node_classification)
+            print("===NMI=== ", nmi)
+        else:
+            print("===NMI=== could not be computed")
+
+        # ### plotting
+        plot_name = str(k)
+        if representation_size == 2:
+            # graph_plot
+            plot_utils.graph_plot(G, labels=node_classification, plot_name=plot_name, save=True)
+            # node_space_plot_2D
+            plot_utils.node_space_plot_2d(model.node_embedding, labels=node_classification, plot_name=plot_name, save=True)
+            # node_space_plot_2d_ellipsoid
+            plot_utils.node_space_plot_2d_ellipsoid(model.node_embedding,
+                                                    labels=node_classification,
+                                                    means=com_learner.g_mixture.means_,
+                                                    covariances=com_learner.g_mixture.covariances_,
+                                                    plot_name=plot_name,
+                                                    save=True)
+        # bar_plot_bgmm_pi
+        plot_utils.bar_plot_bgmm_weights(com_learner.g_mixture.weights_, plot_name=plot_name, save=True)

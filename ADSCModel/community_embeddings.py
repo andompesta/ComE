@@ -24,48 +24,64 @@ class Community2Vec(object):
         self.model_type = model_type
         self.g_mixture = None
 
-    def fit(self, model, reg_covar=0, n_init=10, weight_concentration_prior=None):
+    def reset_mixture(self, model, reg_covar=0, n_init=10, max_iter=1, random_state=None, weight_concentration_prior=None):
         """
         Fit the GMM/BGMM model with the current node embedding and save the result in the model
         :param model: model injected to add the mixture parameters
         :param reg_covar: non-negative regularization added to the diagonal of covariance
         :param n_init: number of initializations to perform
+        :param max_iter: maximum number of iterations to run
+        :param random_state: random state to use for reproducibility
         :param weight_concentration_prior: dirichlet concentration of each component (gamma). default: 1/n_components
         """
-        if self.model_type == "BGMM":
-            self.g_mixture = mixture.BayesianGaussianMixture(n_components=model.k,
-                                                             weight_concentration_prior=weight_concentration_prior,
-                                                             reg_covar=reg_covar,
-                                                             covariance_type='full',
-                                                             n_init=n_init)
-        elif self.model_type == "GMM":
-            self.g_mixture = mixture.GaussianMixture(n_components=model.k,
-                                                     reg_covar=reg_covar,
-                                                     covariance_type='full',
-                                                     n_init=n_init)
-        else:
-            print("Unknown ComE model type: ", self.model_type)
-            print("Using GMM for community embeddings")
-            self.g_mixture = mixture.GaussianMixture(n_components=model.k,
-                                                     reg_covar=reg_covar,
-                                                     covariance_type='full',
-                                                     n_init=n_init)
+        self.g_mixture = self.get_mixture(model.k, reg_covar, n_init, max_iter, random_state, weight_concentration_prior)
+        #self._update_model(model) TODO: how to get mean and covar for iter=0 (init values)?
 
-        log.info("Fitting: {} communities".format(model.k))
+    def fit(self, model):
+        """
+        Fit the GMM/BGMM model with the current node embedding and save the result in the model
+        :param model: model injected to add the mixture parameters
+        """
+
+        #log.info("Fitting: {} communities".format(model.k))
         self.g_mixture.fit(model.node_embedding)
+        self._update_model(model)
 
-        # diag_covars = []
-        # for covar in g.covariances_:
-        #     diag = np.diag(covar)
-        #     diag_covars.append(diag)
-
+    def _update_model(self, model):
         model.centroid = self.g_mixture.means_.astype(np.float32)
         model.covariance_mat = self.g_mixture.covariances_.astype(np.float32)
         model.inv_covariance_mat = self.g_mixture.precisions_.astype(np.float32)
         model.pi = self.g_mixture.predict_proba(model.node_embedding).astype(np.float32)
 
-        # model.c = self.g_mixture.degrees_of_freedom_.astype(np.float32)
-        # model.B = self.g_mixture.covariance_prior_.astype(np.float32)
+    def get_mixture(self, k, reg_covar=0, n_init=10, max_iter=1, random_state=None, weight_concentration_prior=None):
+        def get_gmm():
+            return mixture.GaussianMixture(n_components=k,
+                                           reg_covar=reg_covar,
+                                           covariance_type='full',
+                                           n_init=n_init,
+                                           max_iter=max_iter,
+                                           random_state=random_state,
+                                           init_params='random',
+            )
+
+        def get_bgmm():
+            return mixture.BayesianGaussianMixture(n_components=k,
+                                                   weight_concentration_prior=weight_concentration_prior,
+                                                   reg_covar=reg_covar,
+                                                   covariance_type='full',
+                                                   n_init=n_init,
+                                                   max_iter=max_iter,
+                                                   random_state=random_state,
+                                                   init_params='random',
+            )
+
+        if self.model_type == "BGMM":
+            return get_bgmm()
+        elif self.model_type == "GMM":
+            return get_gmm()
+        else:
+            log.warning(f"Unknown ComE model type {self.model_type}. Defaulting to GMM.")
+            return get_gmm()
 
     def loss(self, nodes, model, beta, chunksize=150):
         """
@@ -117,3 +133,17 @@ class Community2Vec(object):
             grad_input *= (beta / model.k)
 
             model.node_embedding -= (grad_input.clip(min=-0.25, max=0.25)) * self.lr
+
+    @property
+    def converged(self):
+        if self.g_mixture:
+            return self.g_mixture.converged_
+        else:
+            return False
+
+    @property
+    def n_iter(self):
+        if self.g_mixture:
+            return self.g_mixture.n_iter_
+        else:
+            return '?'
