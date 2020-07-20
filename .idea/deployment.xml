@@ -1,14 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
-  <component name="PublishConfigData" serverName="tensorflow-1-vm">
+  <component name="PublishConfigData" autoUpload="Always" serverName="tensorflow-1-vm">
     <serverData>
       <paths name="tensorflow-1-vm">
         <serverdata>
           <mappings>
-            <mapping deploy="ComE_BGMM" local="$PROJECT_DIR$" web="ComE_BGMM" />
+            <mapping deploy="ComE_BGMM" local="$PROJECT_DIR$" />
           </mappings>
         </serverdata>
       </paths>
     </serverData>
+    <option name="myAutoUpload" value="ALWAYS" />
   </component>
 </project>
