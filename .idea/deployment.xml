@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="PublishConfigData" serverName="tensorflow-1-vm">
+    <serverData>
+      <paths name="tensorflow-1-vm">
+        <serverdata>
+          <mappings>
+            <mapping deploy="ComE_BGMM" local="$PROJECT_DIR$" web="ComE_BGMM" />
+          </mappings>
+        </serverdata>
+      </paths>
+    </serverData>
+  </component>
+</project>
