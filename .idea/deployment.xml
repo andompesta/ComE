@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
-  <component name="PublishConfigData" autoUpload="Always" serverName="tensorflow-1-vm">
+  <component name="PublishConfigData" autoUpload="Always" serverName="tensorflow-1-vm" createEmptyFolders="true" preserveFilePermissions="true">
     <serverData>
       <paths name="tensorflow-1-vm">
         <serverdata>
