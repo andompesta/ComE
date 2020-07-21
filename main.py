@@ -25,7 +25,7 @@ import utils.plot_utils as plot_utils
 import timeit
 import networkx as nx
 
-import seaborn  # fancy matplotlib
+#import seaborn  # fancy matplotlib
 import matplotlib.pyplot as plt
 from matplotlib.animation import ArtistAnimation
 
