@@ -85,5 +85,5 @@ dependencies:
     - gensim==0.10.2
     - numpy==1.19.0
     - scipy==1.5.1
-prefix: /Users/anton/opt/miniconda3/envs/BICE
+prefix: ./envs
 
