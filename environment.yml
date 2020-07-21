@@ -32,9 +32,9 @@ dependencies:
   - libedit=3.1.20191231
   - libffi=3.3
   - libgcc=4.8.5
-  - libgfortran=3.0.1
+  - libgfortran=3.0.0
   - libgpuarray=0.7.6
-  - libiconv=1.16
+  - libiconv=1.15
   - libpng=1.6.37
   - libpq=12.2
   - libprotobuf=3.12.3
