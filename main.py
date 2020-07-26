@@ -25,7 +25,7 @@ import utils.plot_utils as plot_utils
 import timeit
 import networkx as nx
 
-import seaborn # fancy matplotlib
+#import seaborn  # fancy matplotlib
 import matplotlib.pyplot as plt
 from matplotlib.animation import ArtistAnimation
 
@@ -54,8 +54,8 @@ if __name__ == "__main__":
     num_workers = 10  # number of thread
     num_iter = 3  # number of overall iteration
     reg_covar = 0.00001  # regularization coefficient to ensure positive covar
-    input_file = 'karate_club'  # name of the input file
-    output_file = 'karate_club'  # name of the output file
+    input_file = 'Dblp'  # name of the input file
+    output_file = 'Dblp'  # name of the output file
     batch_size = 50
     window_size = 10  # ζ: windows size used to compute the context embedding
     negative = 5  # m: number of negative sample
@@ -66,12 +66,12 @@ if __name__ == "__main__":
     come_model_type = "BGMM"  # type of the Community Embedding model: GMM/BGMM
     weight_concentration_prior = 1e-5  # dirichlet concentration of each BGMM component to (de)activate components
 
-    ks = [5]  # number of communities to initialize the GMM/BGMM with
+    ks = [10]  # number of communities to initialize the GMM/BGMM with
     walks_filebase = os.path.join('data', output_file)  # where read/write the sampled path
 
     # CONSTRUCT THE GRAPH
-    # G = graph_utils.load_matfile(os.path.join('./data', input_file, input_file + '.mat'), undirected=True)
-    G = nx.karate_club_graph()  # DEBUG run on karate club graph
+    G = graph_utils.load_matfile(os.path.join('./data', input_file, input_file + '.mat'), undirected=True)
+    #G = nx.karate_club_graph()  # DEBUG run on karate club graph, make sure to mkdir ./data/karate_club
 
     # Sampling the random walks for context
     log.info("sampling the paths")
