@@ -10,7 +10,7 @@ The core algorithm is written in Cython, so we provide a miniconda environment f
 
 ## Conda Environment BICE
 
-To create the BICE conda environment from environment.yml, run `conda env create -f environment.yml` and activate with `conda activate BICE`.
+To create the BICE conda environment from env.yml, run `conda env create -f env.yml` and activate with `conda activate BICE`.
 
 More details on conda environments here: https://docs.conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html#creating-an-environment-from-an-environment-yml-file
 
