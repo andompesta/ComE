@@ -23,7 +23,7 @@ from utils.IO_utils import save_embedding, load_ground_true
 import utils.graph_utils as graph_utils
 import utils.plot_utils as plot_utils
 import timeit
-import networkx as nx
+#import networkx as nx  # DEBUG
 
 #import seaborn  # fancy matplotlib
 import matplotlib.pyplot as plt
