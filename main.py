@@ -143,7 +143,7 @@ if __name__ == "__main__":
             start_time = timeit.default_timer()
 
             while not com_learner.converged or com_max_iter == 0:
-                com_max_iter += 1  # TODO use increase as setting and only log on converge
+                com_max_iter += 10  # TODO use increase as setting and only log on converge
                 log.info(f"->com_max_iter={com_max_iter}")
 
                 com_learner.reset_mixture(model,
