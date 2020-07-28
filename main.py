@@ -50,9 +50,9 @@ if __name__ == "__main__":
 
     number_walks = 10  # γ: number of walks for each node
     walk_length = 80  # l: length of each walk
-    representation_size = 2  # size of the embedding
+    representation_size = 128  # size of the embedding
     num_workers = 10  # number of thread
-    num_iter = 1  # number of overall iteration
+    num_iter = 3  # number of overall iteration
     reg_covar = 0.00001  # regularization coefficient to ensure positive covar
     input_file = 'movie_ratings'  # name of the input file
     output_file = 'movie_ratings'  # name of the output file
@@ -143,7 +143,7 @@ if __name__ == "__main__":
             start_time = timeit.default_timer()
 
             while not com_learner.converged or com_max_iter == 0:
-                com_max_iter += 10  # TODO use increase as setting and only log on converge
+                com_max_iter += 100  # TODO use increase as setting and only log on converge
                 log.info(f"->com_max_iter={com_max_iter}")
 
                 com_learner.reset_mixture(model,
