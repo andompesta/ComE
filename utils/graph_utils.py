@@ -269,6 +269,11 @@ def load_edgelist(file_, source="source", target="target", weight=None):
 
     df = pd.read_csv(file_)
 
+    # DEBUG filter for rating >= 4
+    log.info(f"df edges pre filtering: {df.count()}")
+    df = df[df["rating"] >= 4]
+    log.info(f"df edges post filtering: {df.count()}")
+
     # rename weight column
     if weight is not None:
         df.rename(columns={weight: 'weight'}, inplace=True)
