@@ -1,6 +1,7 @@
 __author__ = 'ando'
 
 import numpy as np
+import pandas as pd
 from time import time
 import logging as log
 import random
@@ -254,4 +255,24 @@ def from_numpy(x, undirected=True):
 def grouper(n, iterable, padvalue=None):
     "grouper(3, 'abcdefg', 'x') --> ('a','b','c'), ('d','e','f'), ('g','x','x')"
     return zip_longest(*[iter(iterable)] * n, fillvalue=padvalue)
+
+
+def load_edgelist(file_, source="source", target="target", weight=None):
+    """
+    read a edgelist csv with pandas and create a networkx graph from it
+    :param file_: csv file
+    :param source: column name of edge's source node
+    :param target: column name of edge's end node
+    :param weight: column name of edge's weight
+    :return:
+    """
+
+    df = pd.read_csv(file_)
+
+    # rename weight column
+    if weight is not None:
+        df.rename(columns={weight: 'weight'}, inplace=True)
+
+    # create graph nx from pandas edge list
+    return nx.from_pandas_edgelist(df, source, target, edge_attr=True)
 
