@@ -47,6 +47,7 @@ except AttributeError:
 if __name__ == "__main__":
 
     animate = False
+    com_iter_step = 100
 
     number_walks = 10  # γ: number of walks for each node
     walk_length = 80  # l: length of each walk
@@ -139,19 +140,20 @@ if __name__ == "__main__":
 
         for i in range(num_iter):
             log.info(f'\t\tITER-{i}\n')
-            com_max_iter = 0 if animate else 99999
+            com_max_iter = 0
             start_time = timeit.default_timer()
 
             while not com_learner.converged or com_max_iter == 0:
-                com_max_iter += 100  # TODO use increase as setting and only log on converge
-                log.info(f"->com_max_iter={com_max_iter}")
+                if animate:
+                    com_max_iter += com_iter_step
+                    log.info(f"->com_max_iter={com_max_iter}")
 
                 com_learner.reset_mixture(model,
                                           reg_covar=reg_covar,
                                           n_init=10,
-                                          max_iter=com_max_iter,
                                           random_state=random_state,
-                                          weight_concentration_prior=weight_concentration_prior)
+                                          weight_concentration_prior=weight_concentration_prior,
+                                          **{'max_iter': com_max_iter if animate})
 
                 with ignore_warnings(category=ConvergenceWarning):
                     com_learner.fit(model)
