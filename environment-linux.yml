@@ -42,7 +42,7 @@ dependencies:
   - libedit=3.1.20191231
   - libffi=3.3
   - libgfortran=3.0.0
-  - libiconv=1.16
+  - libiconv=1.15
   - libpng=1.6.37
   - libsodium=1.0.18
   - llvm-openmp=10.0.0
