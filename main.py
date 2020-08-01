@@ -46,7 +46,7 @@ except AttributeError:
 
 if __name__ == "__main__":
 
-    animate = True
+    animate = False
 
     number_walks = 10  # γ: number of walks for each node
     walk_length = 80  # l: length of each walk
@@ -139,7 +139,7 @@ if __name__ == "__main__":
 
         for i in range(num_iter):
             log.info(f'\t\tITER-{i}\n')
-            com_max_iter = 0
+            com_max_iter = 0 if animate else 99999
             start_time = timeit.default_timer()
 
             while not com_learner.converged or com_max_iter == 0:
