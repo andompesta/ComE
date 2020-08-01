@@ -144,16 +144,19 @@ if __name__ == "__main__":
             start_time = timeit.default_timer()
 
             while not com_learner.converged or com_max_iter == 0:
+                params_anim = {}
                 if animate:
                     com_max_iter += com_iter_step
                     log.info(f"->com_max_iter={com_max_iter}")
+                    params_anim['max_iter'] = com_max_iter
 
                 com_learner.reset_mixture(model,
                                           reg_covar=reg_covar,
                                           n_init=10,
                                           random_state=random_state,
                                           weight_concentration_prior=weight_concentration_prior,
-                                          **{'max_iter': com_max_iter if animate})
+                                          **params_anim
+                                          )
 
                 with ignore_warnings(category=ConvergenceWarning):
                     com_learner.fit(model)
