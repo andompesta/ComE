@@ -155,19 +155,19 @@ if __name__ == "__main__":
                                           n_init=10,
                                           random_state=random_state,
                                           weight_concentration_prior=weight_concentration_prior,
-                                          **params_anim
-                                          )
+                                          **params_anim)
 
                 with ignore_warnings(category=ConvergenceWarning):
                     com_learner.fit(model)
 
                 def animate_model():
-                    artists_step = plot_utils.animate_step(anim_ax,
-                                                           model,
-                                                           i=i,
-                                                           i_com=com_learner.n_iter,
-                                                           converged=com_learner.converged)
-                    anim_artists.append(artists_step)
+                    if animate:
+                        artists_step = plot_utils.animate_step(anim_ax,
+                                                               model,
+                                                               i=i,
+                                                               i_com=com_learner.n_iter,
+                                                               converged=com_learner.converged)
+                        anim_artists.append(artists_step)
 
                 # community converged?
                 if not com_learner.converged:
