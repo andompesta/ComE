@@ -24,7 +24,7 @@ class Community2Vec(object):
         self.model_type = model_type
         self.g_mixture = None
 
-    def reset_mixture(self, model, reg_covar=0, n_init=10, max_iter=1, random_state=None, weight_concentration_prior=None):
+    def reset_mixture(self, model, reg_covar=0, n_init=10, max_iter=None, random_state=None, weight_concentration_prior=None):
         """
         Fit the GMM/BGMM model with the current node embedding and save the result in the model
         :param model: model injected to add the mixture parameters
@@ -53,7 +53,7 @@ class Community2Vec(object):
         model.inv_covariance_mat = self.g_mixture.precisions_.astype(np.float32)
         model.pi = self.g_mixture.predict_proba(model.node_embedding).astype(np.float32)
 
-    def get_mixture(self, k, reg_covar=0, n_init=10, max_iter=1, random_state=None, weight_concentration_prior=None):
+    def get_mixture(self, k, reg_covar=0, n_init=10, max_iter=None, random_state=None, weight_concentration_prior=None):
         def get_gmm():
             return mixture.GaussianMixture(n_components=k,
                                            reg_covar=reg_covar,
