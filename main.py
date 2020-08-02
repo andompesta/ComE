@@ -233,9 +233,9 @@ if __name__ == "__main__":
 
         # ### write predictions to labels_pred.txt
         # save com_learner.g_mixture to file
-        joblib.dump(com_learner.g_mixture, './data/g_mixture.joblib')
+        joblib.dump(com_learner.g_mixture, './model/g_mixture.joblib')
         # using predictions from com_learner.g_mixture with node_embeddings
-        np.savetxt('./data/labels_pred.txt', model.classify_nodes())
+        np.savetxt(f'./data/{output_file}/labels_pred.txt', model.classify_nodes())
 
         # ### NMI
         labels_true, _ = load_ground_true(path="data/" + input_file, file_name=input_file)

@@ -171,7 +171,7 @@ class Model(object):
     def classify_nodes(self, ):
         return np.argmax(self.pi, axis=1)
 
-    def save(self, file_name, path='data'):
+    def save(self, file_name, path='model'):
         if not exists(path):
             makedirs(path)
 
@@ -179,7 +179,7 @@ class Model(object):
             pickle.dump(self.__dict__, file)
 
     @staticmethod
-    def load_model(file_name, path='data'):
+    def load_model(file_name, path='model'):
         with open(path_join(path, file_name + '.bin'), 'rb') as file:
             model = Model()
             model.__dict__ = pickle.load(file)
