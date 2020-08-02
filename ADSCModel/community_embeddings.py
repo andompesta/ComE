@@ -24,7 +24,7 @@ class Community2Vec(object):
         self.model_type = model_type
         self.g_mixture = None
 
-    def reset_mixture(self, model, reg_covar=0, n_init=10, max_iter=None, random_state=None,
+    def reset_mixture(self, model, reg_covar=0, n_init=10, max_iter=420, random_state=None,
                       weight_concentration_prior=None):
         """
         Fit the GMM/BGMM model with the current node embedding and save the result in the model
