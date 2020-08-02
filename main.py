@@ -120,7 +120,7 @@ if __name__ == "__main__":
                        alpha=1,
                        chunksize=batch_size)
     #
-    model.save("{}_pre-training".format(output_file))
+    model.save(f"{output_file}_pre-training")
 
     ###########################
     #   EMBEDDING LEARNING    #
@@ -233,7 +233,7 @@ if __name__ == "__main__":
 
         # ### write predictions to labels_pred.txt
         # save com_learner.g_mixture to file
-        joblib.dump(com_learner.g_mixture, './model/g_mixture.joblib')
+        joblib.dump(com_learner.g_mixture, f'./model/g_mixture_{output_file}.joblib')
         # using predictions from com_learner.g_mixture with node_embeddings
         np.savetxt(f'./data/{output_file}/labels_pred.txt', model.classify_nodes())
 
