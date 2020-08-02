@@ -146,8 +146,8 @@ if __name__ == "__main__":
 
             while not com_learner.converged or com_max_iter == 0:
                 params_anim = {}
+                com_max_iter += com_iter_step if animate else 100
                 if animate:
-                    com_max_iter += com_iter_step
                     log.info(f"->com_max_iter={com_max_iter}")
                     params_anim['max_iter'] = com_max_iter
 
