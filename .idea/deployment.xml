@@ -5,7 +5,7 @@
       <paths name="tensorflow-1-vm">
         <serverdata>
           <mappings>
-            <mapping deploy="ComE_BGMM" local="$PROJECT_DIR$" />
+            <mapping deploy="/ComE_BGMM" local="$PROJECT_DIR$" />
           </mappings>
         </serverdata>
       </paths>
