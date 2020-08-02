@@ -24,7 +24,8 @@ class Community2Vec(object):
         self.model_type = model_type
         self.g_mixture = None
 
-    def reset_mixture(self, model, reg_covar=0, n_init=10, max_iter=None, random_state=None, weight_concentration_prior=None):
+    def reset_mixture(self, model, reg_covar=0, n_init=10, max_iter=None, random_state=None,
+                      weight_concentration_prior=None):
         """
         Fit the GMM/BGMM model with the current node embedding and save the result in the model
         :param model: model injected to add the mixture parameters
@@ -34,8 +35,9 @@ class Community2Vec(object):
         :param random_state: random state to use for reproducibility
         :param weight_concentration_prior: dirichlet concentration of each component (gamma). default: 1/n_components
         """
-        self.g_mixture = self.get_mixture(model.k, reg_covar, n_init, max_iter, random_state, weight_concentration_prior)
-        #self._update_model(model) TODO: how to get mean and covar for iter=0 (init values)?
+        self.g_mixture = self.get_mixture(model.k, reg_covar, n_init, max_iter, random_state,
+                                          weight_concentration_prior)
+        # self._update_model(model) TODO: how to get mean and covar for iter=0 (init values)?
 
     def fit(self, model):
         """
@@ -43,7 +45,7 @@ class Community2Vec(object):
         :param model: model injected to add the mixture parameters
         """
 
-        #log.info("Fitting: {} communities".format(model.k))
+        # log.info("Fitting: {} communities".format(model.k))
         self.g_mixture.fit(model.node_embedding)
         self._update_model(model)
 
@@ -62,7 +64,7 @@ class Community2Vec(object):
                                            max_iter=max_iter,
                                            random_state=random_state,
                                            init_params='random',
-            )
+                                           )
 
         def get_bgmm():
             return mixture.BayesianGaussianMixture(n_components=k,
@@ -73,7 +75,7 @@ class Community2Vec(object):
                                                    max_iter=max_iter,
                                                    random_state=random_state,
                                                    init_params='random',
-            )
+                                                   )
 
         if self.model_type == "BGMM":
             return get_bgmm()
