@@ -54,6 +54,7 @@ if __name__ == "__main__":
     representation_size = 128  # size of the embedding
     num_workers = 10  # number of thread
     num_iter = 3  # number of overall iteration
+    com_n_init = 3  # number of inits for community embedding (default: 10)
     reg_covar = 0.00001  # regularization coefficient to ensure positive covar
     input_file = 'movie_ratings'  # name of the input file
     output_file = 'movie_ratings'  # name of the output file
@@ -152,7 +153,7 @@ if __name__ == "__main__":
 
                 com_learner.reset_mixture(model,
                                           reg_covar=reg_covar,
-                                          n_init=10,
+                                          n_init=com_n_init,
                                           random_state=random_state,
                                           weight_concentration_prior=weight_concentration_prior,
                                           **params_anim)
