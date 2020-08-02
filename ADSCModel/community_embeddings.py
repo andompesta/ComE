@@ -147,7 +147,7 @@ class Community2Vec(object):
 
             model.node_embedding -= (grad_input.clip(min=-0.25, max=0.25)) * self.lr
 
-            log.info(f"PROGRESS: at {i/iter:.2f}%")
+            log.info(f"PROGRESS: at {i/iter*100:.2f}%")
 
         elapsed = time.time() - start
         log.info(f"training on took {elapsed:.1f}s")
