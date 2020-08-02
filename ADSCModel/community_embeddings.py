@@ -64,6 +64,7 @@ class Community2Vec(object):
                                            max_iter=max_iter,
                                            random_state=random_state,
                                            init_params='random',
+                                           verbose=2,
                                            )
 
         def get_bgmm():
@@ -75,6 +76,7 @@ class Community2Vec(object):
                                                    max_iter=max_iter,
                                                    random_state=random_state,
                                                    init_params='random',
+                                                   verbose=2,
                                                    )
 
         if self.model_type == "BGMM":
