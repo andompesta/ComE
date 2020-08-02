@@ -7,6 +7,8 @@ from utils.embedding import chunkize_serial
 from scipy.stats import multivariate_normal
 import logging as log
 
+import time
+
 log.basicConfig(format='%(asctime).19s %(levelname)s %(filename)s: %(lineno)s %(message)s', level=log.DEBUG)
 
 
@@ -119,7 +121,12 @@ class Community2Vec(object):
         :param chunksize:
         :param iter:
         """
-        for _ in range(iter):
+
+        log.info(f"O2 COMMUNITY training model with beta={beta}, chunksize={chunksize}, and iter={iter}")
+
+        start = time.time()
+
+        for i in range(iter):
             grad_input = np.zeros(model.node_embedding.shape).astype(np.float32)
             for node_index in chunkize_serial(map(lambda node: model.vocab[node].index,
                                                   filter(lambda node: node in model.vocab and (
@@ -139,6 +146,11 @@ class Community2Vec(object):
             grad_input *= (beta / model.k)
 
             model.node_embedding -= (grad_input.clip(min=-0.25, max=0.25)) * self.lr
+
+            log.info(f"PROGRESS: at {i/iter:.2f}%")
+
+        elapsed = time.time() - start
+        log.info(f"training on took {elapsed:.1f}s")
 
     @property
     def converged(self):
