@@ -180,12 +180,13 @@ if __name__ == "__main__":
                     animate_model()  # if converged, animate twice
 
                 # DEBUG plot after each community iteration
-                '''plot_utils.node_space_plot_2d_ellipsoid(nodes,
-                                                        labels=labels,
-                                                        means=means,
-                                                        covariances=covars,
-                                                        plot_name=f"k{k}_i{i}_{com_max_iter:03}",
-                                                        save=True)'''
+                if not animate:
+                    plot_utils.node_space_plot_2d_ellipsoid(model.node_embedding,
+                                                            labels=model.classify_nodes(),
+                                                            means=com_learner.g_mixture.means_,
+                                                            covariances=com_learner.g_mixture.covariances_,
+                                                            plot_name=f"k{k}_i{i}_{com_max_iter:03}",
+                                                            save=True)
 
             node_learner.train(model,
                                edges=edges,
@@ -203,12 +204,13 @@ if __name__ == "__main__":
                            file_name=f"{output_file}_alpha-{alpha}_beta-{beta}_ws-{window_size}_neg-{negative}_lr-{lr}_icom-{iter_com}_ind-{iter_node}_k-{model.k}_ds-{down_sampling}")
 
             # DEBUG plot after each ComE iteration
-            '''plot_utils.node_space_plot_2d_ellipsoid(model.node_embedding,
-                                                    labels=model.classify_nodes(),
-                                                    means=com_learner.g_mixture.means_,
-                                                    covariances=com_learner.g_mixture.covariances_,
-                                                    plot_name=f"k{k}_i{i}",
-                                                    save=True)'''
+            if not animate:
+                plot_utils.node_space_plot_2d_ellipsoid(model.node_embedding,
+                                                        labels=model.classify_nodes(),
+                                                        means=com_learner.g_mixture.means_,
+                                                        covariances=com_learner.g_mixture.covariances_,
+                                                        plot_name=f"k{k}_i{i}",
+                                                        save=True)
 
         # ### print model
         node_classification = model.classify_nodes()
