@@ -201,6 +201,7 @@ if __name__ == "__main__":
 
             log.info('time: %.2fs' % (timeit.default_timer() - start_time))
             save_embedding(model.node_embedding, model.vocab,
+                           path=f"data/{output_file}",
                            file_name=f"{output_file}_alpha-{alpha}_beta-{beta}_ws-{window_size}_neg-{negative}_lr-{lr}_icom-{iter_com}_ind-{iter_node}_k-{model.k}_ds-{down_sampling}")
 
             # DEBUG plot after each ComE iteration
