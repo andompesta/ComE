@@ -46,7 +46,8 @@ except AttributeError:
 
 if __name__ == "__main__":
 
-    animate = False
+    should_animate = False
+    should_save_plots = False
     com_iter_step = 100
 
     number_walks = 10  # γ: number of walks for each node
@@ -146,8 +147,8 @@ if __name__ == "__main__":
 
             while not com_learner.converged or com_max_iter == 0:
                 params_anim = {}
-                com_max_iter += com_iter_step if animate else 100
-                if animate:
+                com_max_iter += com_iter_step if should_animate else 100
+                if should_animate:
                     log.info(f"->com_max_iter={com_max_iter}")
                     params_anim['max_iter'] = com_max_iter
 
@@ -162,7 +163,7 @@ if __name__ == "__main__":
                     com_learner.fit(model)
 
                 def animate_model():
-                    if animate:
+                    if should_animate:
                         artists_step = plot_utils.animate_step(anim_ax,
                                                                model,
                                                                i=i,
@@ -180,7 +181,7 @@ if __name__ == "__main__":
                     animate_model()  # if converged, animate twice
 
                 # DEBUG plot after each community iteration
-                if not animate:
+                if not should_animate and should_save_plots:
                     plot_utils.node_space_plot_2d_ellipsoid(model.node_embedding,
                                                             labels=model.classify_nodes(),
                                                             means=com_learner.g_mixture.means_,
@@ -205,7 +206,7 @@ if __name__ == "__main__":
                            file_name=f"{output_file}_alpha-{alpha}_beta-{beta}_ws-{window_size}_neg-{negative}_lr-{lr}_icom-{iter_com}_ind-{iter_node}_k-{model.k}_ds-{down_sampling}")
 
             # DEBUG plot after each ComE iteration
-            if not animate:
+            if not should_animate and should_save_plots:
                 plot_utils.node_space_plot_2d_ellipsoid(model.node_embedding,
                                                         labels=model.classify_nodes(),
                                                         means=com_learner.g_mixture.means_,
@@ -225,7 +226,7 @@ if __name__ == "__main__":
               "=>node_classification: ", node_classification, "\n", )
 
         # ### Animation
-        if animate:
+        if should_animate:
             anim = ArtistAnimation(anim_fig, anim_artists, interval=500, blit=True, repeat=False)
             #anim.to_html5_video()
             # export animation as gif:
