@@ -95,6 +95,7 @@ dependencies:
   - setuptools=49.2.0
   - sip=4.19.8
   - six=1.15.0
+  - sortedcontainers=2.2.2
   - sqlite=3.32.3
   - terminado=0.8.3
   - testpath=0.4.4
@@ -111,3 +112,4 @@ dependencies:
   - zipp=3.1.0
   - zlib=1.2.11
 prefix: /Users/anton/miniconda3/envs/MT
+

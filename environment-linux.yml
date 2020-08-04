@@ -53,6 +53,7 @@ dependencies:
   - seaborn-base=0.10.1
   - setuptools=49.2.0
   - six=1.15.0
+  - sortedcontainers=2.2.2
   - sqlite=3.32.3
   - statsmodels=0.11.1
   - threadpoolctl=2.1.0
@@ -62,5 +63,52 @@ dependencies:
   - xz=5.2.5
   - zlib=1.2.11
   - zstd=1.4.5
+  - pip:
+    - argon2-cffi==20.1.0
+    - attrs==19.3.0
+    - backcall==0.2.0
+    - bleach==3.1.5
+    - cffi==1.14.1
+    - defusedxml==0.6.0
+    - entrypoints==0.3
+    - importlib-metadata==1.7.0
+    - ipykernel==5.3.4
+    - ipython==7.16.1
+    - ipython-genutils==0.2.0
+    - ipywidgets==7.5.1
+    - jedi==0.17.2
+    - jinja2==2.11.2
+    - jsonschema==3.2.0
+    - jupyter==1.0.0
+    - jupyter-client==6.1.6
+    - jupyter-console==6.1.0
+    - jupyter-core==4.6.3
+    - markupsafe==1.1.1
+    - mistune==0.8.4
+    - nbconvert==5.6.1
+    - nbformat==5.0.7
+    - notebook==6.1.0
+    - packaging==20.4
+    - pandocfilters==1.4.2
+    - parso==0.7.1
+    - pexpect==4.8.0
+    - pickleshare==0.7.5
+    - prometheus-client==0.8.0
+    - prompt-toolkit==3.0.5
+    - ptyprocess==0.6.0
+    - pycparser==2.20
+    - pygments==2.6.1
+    - pyrsistent==0.16.0
+    - pyzmq==19.0.2
+    - qtconsole==4.7.5
+    - qtpy==1.9.0
+    - send2trash==1.5.0
+    - terminado==0.8.3
+    - testpath==0.4.4
+    - traitlets==4.3.3
+    - wcwidth==0.2.5
+    - webencodings==0.5.1
+    - widgetsnbextension==3.5.1
+    - zipp==3.1.0
 prefix: /opt/conda/envs/MT
 
