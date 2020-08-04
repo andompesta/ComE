@@ -48,7 +48,7 @@ if __name__ == "__main__":
 
     should_animate = False
     should_plot_steps = False
-    should_plot = False
+    should_plot = True
     com_iter_step = 100
 
     number_walks = 10  # γ: number of walks for each node
