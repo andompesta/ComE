@@ -47,7 +47,7 @@ except AttributeError:
 if __name__ == "__main__":
 
     should_animate = False
-    should_save_plots = False
+    should_plot = False
     com_iter_step = 100
 
     number_walks = 10  # γ: number of walks for each node
@@ -181,7 +181,7 @@ if __name__ == "__main__":
                     animate_model()  # if converged, animate twice
 
                 # DEBUG plot after each community iteration
-                if not should_animate and should_save_plots:
+                if not should_animate and should_plot:
                     plot_utils.node_space_plot_2d_ellipsoid(model.node_embedding,
                                                             labels=model.classify_nodes(),
                                                             means=com_learner.g_mixture.means_,
@@ -206,7 +206,7 @@ if __name__ == "__main__":
                            file_name=f"{output_file}_alpha-{alpha}_beta-{beta}_ws-{window_size}_neg-{negative}_lr-{lr}_icom-{iter_com}_ind-{iter_node}_k-{model.k}_ds-{down_sampling}")
 
             # DEBUG plot after each ComE iteration
-            if not should_animate and should_save_plots:
+            if not should_animate and should_plot:
                 plot_utils.node_space_plot_2d_ellipsoid(model.node_embedding,
                                                         labels=model.classify_nodes(),
                                                         means=com_learner.g_mixture.means_,
