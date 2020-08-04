@@ -47,6 +47,7 @@ except AttributeError:
 if __name__ == "__main__":
 
     should_animate = False
+    should_plot_steps = False
     should_plot = False
     com_iter_step = 100
 
@@ -181,7 +182,7 @@ if __name__ == "__main__":
                     animate_model()  # if converged, animate twice
 
                 # DEBUG plot after each community iteration
-                if not should_animate and should_plot:
+                if not should_animate and should_plot_steps:
                     plot_utils.node_space_plot_2d_ellipsoid(model.node_embedding,
                                                             labels=model.classify_nodes(),
                                                             means=com_learner.g_mixture.means_,
@@ -206,7 +207,7 @@ if __name__ == "__main__":
                            file_name=f"{output_file}_alpha-{alpha}_beta-{beta}_ws-{window_size}_neg-{negative}_lr-{lr}_icom-{iter_com}_ind-{iter_node}_k-{model.k}_ds-{down_sampling}")
 
             # DEBUG plot after each ComE iteration
-            if not should_animate and should_plot:
+            if not should_animate and should_plot_steps:
                 plot_utils.node_space_plot_2d_ellipsoid(model.node_embedding,
                                                         labels=model.classify_nodes(),
                                                         means=com_learner.g_mixture.means_,
@@ -250,7 +251,7 @@ if __name__ == "__main__":
 
         # ### plotting
         plot_name = str(k)
-        if representation_size == 2:
+        if should_plot:
             # graph_plot
             plot_utils.graph_plot(G, labels=node_classification, plot_name=plot_name, save=True)
             # node_space_plot_2D
@@ -262,5 +263,5 @@ if __name__ == "__main__":
                                                     covariances=com_learner.g_mixture.covariances_,
                                                     plot_name=plot_name,
                                                     save=True)
-        # bar_plot_bgmm_pi
-        plot_utils.bar_plot_bgmm_weights(com_learner.g_mixture.weights_, plot_name=plot_name, save=True)
+            # bar_plot_bgmm_pi
+            plot_utils.bar_plot_bgmm_weights(com_learner.g_mixture.weights_, plot_name=plot_name, save=True)
