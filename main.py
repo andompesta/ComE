@@ -79,7 +79,7 @@ if __name__ == "__main__":
     # load karate club directly
     G = nx.karate_club_graph()  # DEBUG run on karate club graph, make sure to mkdir ./data/karate_club
     # load from edgelist csv
-    #G = graph_utils.load_edgelist(os.path.join('./data', input_file, input_file + '.txt'), source="a", target="b", delimiter=" ")
+    #G = graph_utils.load_edgelist(os.path.join('./data', input_file, input_file + '.txt'), source="u", target="v", delimiter=" ")
 
     # DEBUG remove some edges
     print("PRE NUM_OF_EDGES: ", G.number_of_edges())
