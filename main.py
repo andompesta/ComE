@@ -58,8 +58,8 @@ if __name__ == "__main__":
     num_iter = 3  # number of overall iteration
     com_n_init = 3  # number of inits for community embedding (default: 10)
     reg_covar = 0.00001  # regularization coefficient to ensure positive covar
-    input_file = 'facebook'  # name of the input file
-    output_file = 'facebook'  # name of the output file
+    input_file = 'karate_club'  # name of the input file
+    output_file = input_file  # name of the output file
     batch_size = 50
     window_size = 10  # ζ: windows size used to compute the context embedding
     negative = 5  # m: number of negative sample
