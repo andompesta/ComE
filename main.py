@@ -49,11 +49,11 @@ if __name__ == "__main__":
     should_animate = True
     should_plot_steps = True
     should_plot = True
-    com_iter_step = 100
+    com_iter_step = 1
 
     number_walks = 10  # γ: number of walks for each node
     walk_length = 80  # l: length of each walk
-    representation_size = 128  # size of the embedding
+    representation_size = 2  # size of the embedding
     num_workers = 10  # number of thread
     num_iter = 3  # number of overall iteration
     com_n_init = 3  # number of inits for community embedding (default: 10)
