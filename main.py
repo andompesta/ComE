@@ -258,9 +258,17 @@ if __name__ == "__main__":
         plot_name = str(k)
         if should_plot:
             # graph_plot
-            plot_utils.graph_plot(G, labels=node_classification, plot_name=plot_name, save=True)
+            plot_utils.graph_plot(G,
+                                  labels=node_classification,
+                                  plot_name=plot_name,
+                                  path=f"./plots/{output_file}",
+                                  save=True)
             # node_space_plot_2D
-            plot_utils.node_space_plot_2d(model.node_embedding, labels=node_classification, plot_name=plot_name, save=True)
+            plot_utils.node_space_plot_2d(model.node_embedding,
+                                          labels=node_classification,
+                                          plot_name=plot_name,
+                                          path=f"./plots/{output_file}",
+                                          save=True)
             # node_space_plot_2d_ellipsoid
             plot_utils.node_space_plot_2d_ellipsoid(model.node_embedding,
                                                     labels=node_classification,
