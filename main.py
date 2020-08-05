@@ -191,6 +191,7 @@ if __name__ == "__main__":
                                                             means=com_learner.g_mixture.means_,
                                                             covariances=com_learner.g_mixture.covariances_,
                                                             plot_name=f"k{k}_i{i}_{com_max_iter:03}",
+                                                            path=f"./plots/{output_file}",
                                                             save=True)
 
             node_learner.train(model,
@@ -216,6 +217,7 @@ if __name__ == "__main__":
                                                         means=com_learner.g_mixture.means_,
                                                         covariances=com_learner.g_mixture.covariances_,
                                                         plot_name=f"k{k}_i{i}",
+                                                        path=f"./plots/{output_file}",
                                                         save=True)
 
         # ### print model
@@ -235,7 +237,7 @@ if __name__ == "__main__":
             #anim.to_html5_video()
             # export animation as gif:
             # you may need to install "imagemagick" (ex.: brew install imagemagick)
-            anim.save('./plots/animation.gif', writer='imagemagick')
+            anim.save(f"./plots/{output_file}/animation.gif", writer='imagemagick')
 
         # ### write predictions to labels_pred.txt
         # save com_learner.g_mixture to file
@@ -265,6 +267,10 @@ if __name__ == "__main__":
                                                     means=com_learner.g_mixture.means_,
                                                     covariances=com_learner.g_mixture.covariances_,
                                                     plot_name=plot_name,
+                                                    path=f"./plots/{output_file}",
                                                     save=True)
             # bar_plot_bgmm_pi
-            plot_utils.bar_plot_bgmm_weights(com_learner.g_mixture.weights_, plot_name=plot_name, save=True)
+            plot_utils.bar_plot_bgmm_weights(com_learner.g_mixture.weights_,
+                                             _name=plot_name,
+                                             path=f"./plots/{output_file}",
+                                             save=True)
