@@ -46,8 +46,8 @@ except AttributeError:
 
 if __name__ == "__main__":
 
-    should_animate = False
-    should_plot_steps = False
+    should_animate = True
+    should_plot_steps = True
     should_plot = True
     com_iter_step = 100
 
@@ -77,9 +77,9 @@ if __name__ == "__main__":
     # load from matfile
     #G = graph_utils.load_matfile(os.path.join('./data', input_file, input_file + '.mat'), undirected=True)
     # load karate club directly
-    #G = nx.karate_club_graph()  # DEBUG run on karate club graph, make sure to mkdir ./data/karate_club
+    G = nx.karate_club_graph()  # DEBUG run on karate club graph, make sure to mkdir ./data/karate_club
     # load from edgelist csv
-    G = graph_utils.load_edgelist(os.path.join('./data', input_file, input_file + '.txt'), source="a", target="b", delimiter=" ")
+    #G = graph_utils.load_edgelist(os.path.join('./data', input_file, input_file + '.txt'), source="a", target="b", delimiter=" ")
 
     print("G.number_of_nodes: ", G.number_of_nodes())
     print("G.number_of_edges: ", G.number_of_edges())
