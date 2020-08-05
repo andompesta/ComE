@@ -257,7 +257,7 @@ def grouper(n, iterable, padvalue=None):
     return zip_longest(*[iter(iterable)] * n, fillvalue=padvalue)
 
 
-def load_edgelist(file_, source="source", target="target", weight=None):
+def load_edgelist(file_, source="source", target="target", weight=None, delimiter=","):
     """
     read a edgelist csv with pandas and create a networkx graph from it
     :param file_: csv file
@@ -267,17 +267,12 @@ def load_edgelist(file_, source="source", target="target", weight=None):
     :return:
     """
 
-    df = pd.read_csv(file_)
-
-    # DEBUG filter for rating >= 4
-    log.info(f"df edges pre filtering: {df.count()}")
-    df = df[df["rating"] >= 4]
-    log.info(f"df edges post filtering: {df.count()}")
+    df = pd.read_csv(file_, delimiter=delimiter)
 
     # rename weight column
     if weight is not None:
         df.rename(columns={weight: 'weight'}, inplace=True)
 
     # create graph nx from pandas edge list
-    return nx.from_pandas_edgelist(df, source, target, edge_attr=True)
+    return nx.from_pandas_edgelist(df, source, target)
 

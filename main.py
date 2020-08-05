@@ -58,8 +58,8 @@ if __name__ == "__main__":
     num_iter = 3  # number of overall iteration
     com_n_init = 3  # number of inits for community embedding (default: 10)
     reg_covar = 0.00001  # regularization coefficient to ensure positive covar
-    input_file = 'movie_ratings'  # name of the input file
-    output_file = 'movie_ratings'  # name of the output file
+    input_file = 'facebook'  # name of the input file
+    output_file = 'facebook'  # name of the output file
     batch_size = 50
     window_size = 10  # ζ: windows size used to compute the context embedding
     negative = 5  # m: number of negative sample
@@ -79,7 +79,10 @@ if __name__ == "__main__":
     # load karate club directly
     #G = nx.karate_club_graph()  # DEBUG run on karate club graph, make sure to mkdir ./data/karate_club
     # load from edgelist csv
-    G = graph_utils.load_edgelist(os.path.join('./data', input_file, input_file + '.csv'), source="userId", target="movieId", weight="rating")
+    G = graph_utils.load_edgelist(os.path.join('./data', input_file, input_file + '.txt'), source="a", target="b", delimiter=" ")
+
+    print("G.number_of_nodes: ", G.number_of_nodes())
+    print("G.number_of_edges: ", G.number_of_edges())
 
     # Sampling the random walks for context
     log.info("sampling the paths")
