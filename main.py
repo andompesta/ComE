@@ -81,6 +81,14 @@ if __name__ == "__main__":
     # load from edgelist csv
     #G = graph_utils.load_edgelist(os.path.join('./data', input_file, input_file + '.txt'), source="a", target="b", delimiter=" ")
 
+    # DEBUG remove some edges
+    print("PRE NUM_OF_EDGES: ", G.number_of_edges())
+    G.remove_edge(0, 10)
+    G.remove_edge(5, 16)
+    G.remove_edge(33, 29)
+    G.remove_edge(32, 15)
+    print("POST NUM_OF_EDGES: ", G.number_of_edges())
+
     print("G.number_of_nodes: ", G.number_of_nodes())
     print("G.number_of_edges: ", G.number_of_edges())
 
