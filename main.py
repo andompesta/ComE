@@ -271,6 +271,6 @@ if __name__ == "__main__":
                                                     save=True)
             # bar_plot_bgmm_pi
             plot_utils.bar_plot_bgmm_weights(com_learner.g_mixture.weights_,
-                                             _name=plot_name,
+                                             plot_name=plot_name,
                                              path=f"./plots/{output_file}",
                                              save=True)
