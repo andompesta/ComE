@@ -101,7 +101,7 @@ class Context2Vec(object):
         """
         assert model.node_embedding.dtype == np.float32
         assert model.context_embedding.dtype == np.float32
-        log.info("O2 training model with %i workers on %i vocabulary and %i features, using \t'negative sampling'=%s\t'windows'=%s" %
+        log.info("O3 CONTEXT training model with %i workers on %i vocabulary and %i features, using \t'negative sampling'=%s\t'windows'=%s" %
                     (self.workers, len(model.vocab), model.layer1_size, self.negative, self.window_size))
 
         if alpha <= 0.:

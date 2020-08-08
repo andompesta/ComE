@@ -59,7 +59,7 @@ class Node2Vec(object):
         """
         assert model.node_embedding.dtype == np.float32
 
-        log.info("O1 training model with %i workers on %i vocabulary and %i features and 'negative sampling'=%s" %
+        log.info("O1 NODE training model with %i workers on %i vocabulary and %i features and 'negative sampling'=%s" %
                  (self.workers, len(model.vocab), model.layer1_size, self.negative))
 
         if not model.vocab:

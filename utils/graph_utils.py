@@ -1,6 +1,7 @@
 __author__ = 'ando'
 
 import numpy as np
+import pandas as pd
 from time import time
 import logging as log
 import random
@@ -30,7 +31,6 @@ def __random_walk__(G, path_length, start, alpha=0, rand=random.Random()):
     '''
 
     path = [start]
-
 
     while len(path) < path_length:
         cur = path[-1]
@@ -67,39 +67,40 @@ def __from_adjlist_unchecked__(adjlist):
     G.add_edges_from(adjlist)
     return G
 
+
 def load_adjacencylist(file_, undirected=False, chunksize=10000):
-    '''
+    """
     multi-threaded function to read the adjacency matrix and build the graph
     :param file_: graph file
     :param undirected: is the graph undirected
     :param chunksize: how many edges for thread
     :return:
-    '''
+    """
 
     parse_func = __parse_adjacencylist_unchecked__
     convert_func = __from_adjlist_unchecked__
 
-
     adjlist = []
 
-    #read the matrix file
+    # read the matrix file
     t0 = time()
     with open(file_, 'r') as f:
         with ProcessPoolExecutor(max_workers=cpu_count()) as executor:
             total = 0
-            for idx, adj_chunk in enumerate(executor.map(parse_func, grouper(int(chunksize), f))): #execute pare_function on the adiacent list of the file in multipe process
-                adjlist.extend(adj_chunk) #merge the results of different process
+            for idx, adj_chunk in enumerate(executor.map(parse_func, grouper(int(chunksize),
+                                                                             f))):  # execute pare_function on the adiacent list of the file in multipe process
+                adjlist.extend(adj_chunk)  # merge the results of different process
                 total += len(adj_chunk)
     t1 = time()
     adjlist = np.asarray(adjlist)
 
-    log.info('Parsed {} edges with {} chunks in {}s'.format(total, idx, t1-t0))
+    log.info('Parsed {} edges with {} chunks in {}s'.format(total, idx, t1 - t0))
 
     t0 = time()
     G = convert_func(adjlist)
     t1 = time()
 
-    log.debug('Converted edges to graph in {}s'.format(t1-t0))
+    log.debug('Converted edges to graph in {}s'.format(t1 - t0))
 
     if undirected:
         G = G.to_undirected()
@@ -112,10 +113,12 @@ def _write_walks_to_disk(args):
     G = __current_graph
     t_0 = time()
     with open(f, 'w') as fout:
-        for walk in build_deepwalk_corpus_iter(G=G, num_paths=num_paths, path_length=path_length, alpha=alpha, rand=rand):
+        for walk in build_deepwalk_corpus_iter(G=G, num_paths=num_paths, path_length=path_length, alpha=alpha,
+                                               rand=rand):
             fout.write(u"{}\n".format(u" ".join(__vertex2str[v] for v in walk)))
     log.info("Generated new file {}, it took {} seconds".format(f, time() - t_0))
     return f
+
 
 def write_walks_to_disk(G, filebase, num_paths, path_length, alpha=0, rand=random.Random(0), num_workers=cpu_count()):
     '''
@@ -132,7 +135,7 @@ def write_walks_to_disk(G, filebase, num_paths, path_length, alpha=0, rand=rando
     global __current_graph
     global __vertex2str
     __current_graph = G
-    __vertex2str = {v:str(v) for v in G.nodes()}
+    __vertex2str = {v: str(v) for v in G.nodes()}
     files_list = ["{}.{}".format(filebase, str(x)) for x in range(num_paths)]
     expected_size = len(G)
     args_list = []
@@ -141,11 +144,12 @@ def write_walks_to_disk(G, filebase, num_paths, path_length, alpha=0, rand=rando
     if num_paths <= num_workers:
         paths_per_worker = [1 for x in range(num_paths)]
     else:
-        paths_per_worker = [len(list(filter(lambda z: z!= None, [y for y in x]))) for x in grouper(int(num_paths / num_workers)+1, range(1, num_paths+1))]
+        paths_per_worker = [len(list(filter(lambda z: z != None, [y for y in x]))) for x in
+                            grouper(int(num_paths / num_workers) + 1, range(1, num_paths + 1))]
 
     with ProcessPoolExecutor(max_workers=num_workers) as executor:
         for size, file_, ppw in zip(executor.map(count_lines, files_list), files_list, paths_per_worker):
-            args_list.append((ppw, path_length, alpha, random.Random(rand.randint(0, 2**31)), file_))
+            args_list.append((ppw, path_length, alpha, random.Random(rand.randint(0, 2 ** 31)), file_))
 
     with ProcessPoolExecutor(max_workers=num_workers) as executor:
         for file_ in executor.map(_write_walks_to_disk, args_list):
@@ -153,11 +157,13 @@ def write_walks_to_disk(G, filebase, num_paths, path_length, alpha=0, rand=rando
 
     return files
 
+
 def combine_files_iter(file_list):
     for file in file_list:
         with open(file, 'r') as f:
             for line in f:
                 yield map(int, line.split())
+
 
 def count_lines(f):
     if path.isfile(f):
@@ -165,6 +171,7 @@ def count_lines(f):
         return num_lines
     else:
         return 0
+
 
 def build_deepwalk_corpus(G, num_paths, path_length, alpha=0, rand=random.Random(0)):
     '''
@@ -191,7 +198,7 @@ def build_deepwalk_corpus_iter(G, num_paths, path_length, alpha=0, rand=random.R
     for cnt in range(num_paths):
         rand.shuffle(nodes)
         for node in nodes:
-            yield __random_walk__(G,path_length, rand=rand, alpha=alpha, start=node)
+            yield __random_walk__(G, path_length, rand=rand, alpha=alpha, start=node)
 
 
 def count_textfiles(files, workers=1):
@@ -200,6 +207,7 @@ def count_textfiles(files, workers=1):
         for c_ in executor.map(count_words, files):
             c.update(c_)
     return c
+
 
 def count_words(file):
     """ Counts the word frequences in a list of sentences.
@@ -215,11 +223,13 @@ def count_words(file):
             c.update(words)
     return c
 
-def load_matfile(file_, variable_name="network", undirected=True):
-  mat_varables = loadmat(file_)
-  mat_matrix = mat_varables[variable_name]
 
-  return from_numpy(mat_matrix, undirected)
+def load_matfile(file_, variable_name="network", undirected=True):
+    mat_varables = loadmat(file_)
+    mat_matrix = mat_varables[variable_name]
+
+    return from_numpy(mat_matrix, undirected)
+
 
 def from_numpy(x, undirected=True):
     """
@@ -232,10 +242,10 @@ def from_numpy(x, undirected=True):
 
     if issparse(x):
         cx = x.tocoo()
-        for i,j,v in zip(cx.row, cx.col, cx.data):
+        for i, j, v in zip(cx.row, cx.col, cx.data):
             G.add_edge(i, j)
     else:
-      raise Exception("Dense matrices not yet supported.")
+        raise Exception("Dense matrices not yet supported.")
 
     if undirected:
         G = G.to_undirected()
@@ -244,5 +254,30 @@ def from_numpy(x, undirected=True):
 
 def grouper(n, iterable, padvalue=None):
     "grouper(3, 'abcdefg', 'x') --> ('a','b','c'), ('d','e','f'), ('g','x','x')"
-    return zip_longest(*[iter(iterable)]*n, fillvalue=padvalue)
+    return zip_longest(*[iter(iterable)] * n, fillvalue=padvalue)
+
+
+def load_edgelist(file_, source="source", target="target", weight=None):
+    """
+    read a edgelist csv with pandas and create a networkx graph from it
+    :param file_: csv file
+    :param source: column name of edge's source node
+    :param target: column name of edge's end node
+    :param weight: column name of edge's weight
+    :return:
+    """
+
+    df = pd.read_csv(file_)
+
+    # DEBUG filter for rating >= 4
+    log.info(f"df edges pre filtering: {df.count()}")
+    df = df[df["rating"] >= 4]
+    log.info(f"df edges post filtering: {df.count()}")
+
+    # rename weight column
+    if weight is not None:
+        df.rename(columns={weight: 'weight'}, inplace=True)
+
+    # create graph nx from pandas edge list
+    return nx.from_pandas_edgelist(df, source, target, edge_attr=True)
 

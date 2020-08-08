@@ -7,6 +7,8 @@ from utils.embedding import chunkize_serial
 from scipy.stats import multivariate_normal
 import logging as log
 
+import time
+
 log.basicConfig(format='%(asctime).19s %(levelname)s %(filename)s: %(lineno)s %(message)s', level=log.DEBUG)
 
 
@@ -24,7 +26,8 @@ class Community2Vec(object):
         self.model_type = model_type
         self.g_mixture = None
 
-    def reset_mixture(self, model, reg_covar=0, n_init=10, max_iter=1, random_state=None, weight_concentration_prior=None):
+    def reset_mixture(self, model, reg_covar=0, n_init=10, max_iter=420, random_state=None,
+                      weight_concentration_prior=None):
         """
         Fit the GMM/BGMM model with the current node embedding and save the result in the model
         :param model: model injected to add the mixture parameters
@@ -34,8 +37,9 @@ class Community2Vec(object):
         :param random_state: random state to use for reproducibility
         :param weight_concentration_prior: dirichlet concentration of each component (gamma). default: 1/n_components
         """
-        self.g_mixture = self.get_mixture(model.k, reg_covar, n_init, max_iter, random_state, weight_concentration_prior)
-        #self._update_model(model) TODO: how to get mean and covar for iter=0 (init values)?
+        self.g_mixture = self.get_mixture(model.k, reg_covar, n_init, max_iter, random_state,
+                                          weight_concentration_prior)
+        # self._update_model(model) TODO: how to get mean and covar for iter=0 (init values)?
 
     def fit(self, model):
         """
@@ -43,7 +47,7 @@ class Community2Vec(object):
         :param model: model injected to add the mixture parameters
         """
 
-        #log.info("Fitting: {} communities".format(model.k))
+        log.info("Fitting: {} communities".format(model.k))
         self.g_mixture.fit(model.node_embedding)
         self._update_model(model)
 
@@ -53,7 +57,7 @@ class Community2Vec(object):
         model.inv_covariance_mat = self.g_mixture.precisions_.astype(np.float32)
         model.pi = self.g_mixture.predict_proba(model.node_embedding).astype(np.float32)
 
-    def get_mixture(self, k, reg_covar=0, n_init=10, max_iter=1, random_state=None, weight_concentration_prior=None):
+    def get_mixture(self, k, reg_covar=0, n_init=10, max_iter=420, random_state=None, weight_concentration_prior=None):
         def get_gmm():
             return mixture.GaussianMixture(n_components=k,
                                            reg_covar=reg_covar,
@@ -62,7 +66,9 @@ class Community2Vec(object):
                                            max_iter=max_iter,
                                            random_state=random_state,
                                            init_params='random',
-            )
+                                           verbose=3,
+                                           verbose_interval=10,
+                                           )
 
         def get_bgmm():
             return mixture.BayesianGaussianMixture(n_components=k,
@@ -73,7 +79,9 @@ class Community2Vec(object):
                                                    max_iter=max_iter,
                                                    random_state=random_state,
                                                    init_params='random',
-            )
+                                                   verbose=3,
+                                                   verbose_interval=10,
+                                                   )
 
         if self.model_type == "BGMM":
             return get_bgmm()
@@ -113,7 +121,12 @@ class Community2Vec(object):
         :param chunksize:
         :param iter:
         """
-        for _ in range(iter):
+
+        log.info(f"O2 COMMUNITY training model with beta={beta}, chunksize={chunksize}, and iter={iter}")
+
+        start = time.time()
+
+        for i in range(iter):
             grad_input = np.zeros(model.node_embedding.shape).astype(np.float32)
             for node_index in chunkize_serial(map(lambda node: model.vocab[node].index,
                                                   filter(lambda node: node in model.vocab and (
@@ -133,6 +146,11 @@ class Community2Vec(object):
             grad_input *= (beta / model.k)
 
             model.node_embedding -= (grad_input.clip(min=-0.25, max=0.25)) * self.lr
+
+            log.info(f"PROGRESS: at {i/iter*100:.2f}%")
+
+        elapsed = time.time() - start
+        log.info(f"training on took {elapsed:.1f}s")
 
     @property
     def converged(self):

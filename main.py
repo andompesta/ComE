@@ -46,16 +46,20 @@ except AttributeError:
 
 if __name__ == "__main__":
 
-    animate = True
+    should_animate = False
+    should_plot_steps = False
+    should_plot = True
+    com_iter_step = 100
 
     number_walks = 10  # γ: number of walks for each node
     walk_length = 80  # l: length of each walk
-    representation_size = 2  # size of the embedding
+    representation_size = 128  # size of the embedding
     num_workers = 10  # number of thread
     num_iter = 3  # number of overall iteration
+    com_n_init = 3  # number of inits for community embedding (default: 10)
     reg_covar = 0.00001  # regularization coefficient to ensure positive covar
-    input_file = 'karate_club'  # name of the input file
-    output_file = 'karate_club'  # name of the output file
+    input_file = 'movie_ratings'  # name of the input file
+    output_file = 'movie_ratings'  # name of the output file
     batch_size = 50
     window_size = 10  # ζ: windows size used to compute the context embedding
     negative = 5  # m: number of negative sample
@@ -70,8 +74,12 @@ if __name__ == "__main__":
     walks_filebase = os.path.join('data', output_file)  # where read/write the sampled path
 
     # CONSTRUCT THE GRAPH
+    # load from matfile
     #G = graph_utils.load_matfile(os.path.join('./data', input_file, input_file + '.mat'), undirected=True)
-    G = nx.karate_club_graph()  # DEBUG run on karate club graph, make sure to mkdir ./data/karate_club
+    # load karate club directly
+    #G = nx.karate_club_graph()  # DEBUG run on karate club graph, make sure to mkdir ./data/karate_club
+    # load from edgelist csv
+    G = graph_utils.load_edgelist(os.path.join('./data', input_file, input_file + '.csv'), source="userId", target="movieId", weight="rating")
 
     # Sampling the random walks for context
     log.info("sampling the paths")
@@ -114,7 +122,7 @@ if __name__ == "__main__":
                        alpha=1,
                        chunksize=batch_size)
     #
-    model.save("{}_pre-training".format(output_file))
+    model.save(f"{output_file}_pre-training")
 
     ###########################
     #   EMBEDDING LEARNING    #
@@ -139,26 +147,30 @@ if __name__ == "__main__":
             start_time = timeit.default_timer()
 
             while not com_learner.converged or com_max_iter == 0:
-                com_max_iter += 1  # TODO use increase as setting and only log on converge
-                log.info(f"->com_max_iter={com_max_iter}")
+                params_anim = {}
+                com_max_iter += com_iter_step if should_animate else 100
+                if should_animate:
+                    log.info(f"->com_max_iter={com_max_iter}")
+                    params_anim['max_iter'] = com_max_iter
 
                 com_learner.reset_mixture(model,
                                           reg_covar=reg_covar,
-                                          n_init=10,
-                                          max_iter=com_max_iter,
+                                          n_init=com_n_init,
                                           random_state=random_state,
-                                          weight_concentration_prior=weight_concentration_prior)
+                                          weight_concentration_prior=weight_concentration_prior,
+                                          **params_anim)
 
                 with ignore_warnings(category=ConvergenceWarning):
                     com_learner.fit(model)
 
                 def animate_model():
-                    artists_step = plot_utils.animate_step(anim_ax,
-                                                           model,
-                                                           i=i,
-                                                           i_com=com_learner.n_iter,
-                                                           converged=com_learner.converged)
-                    anim_artists.append(artists_step)
+                    if should_animate:
+                        artists_step = plot_utils.animate_step(anim_ax,
+                                                               model,
+                                                               i=i,
+                                                               i_com=com_learner.n_iter,
+                                                               converged=com_learner.converged)
+                        anim_artists.append(artists_step)
 
                 # community converged?
                 if not com_learner.converged:
@@ -170,12 +182,13 @@ if __name__ == "__main__":
                     animate_model()  # if converged, animate twice
 
                 # DEBUG plot after each community iteration
-                '''plot_utils.node_space_plot_2d_ellipsoid(nodes,
-                                                        labels=labels,
-                                                        means=means,
-                                                        covariances=covars,
-                                                        plot_name=f"k{k}_i{i}_{com_max_iter:03}",
-                                                        save=True)'''
+                if not should_animate and should_plot_steps:
+                    plot_utils.node_space_plot_2d_ellipsoid(model.node_embedding,
+                                                            labels=model.classify_nodes(),
+                                                            means=com_learner.g_mixture.means_,
+                                                            covariances=com_learner.g_mixture.covariances_,
+                                                            plot_name=f"k{k}_i{i}_{com_max_iter:03}",
+                                                            save=True)
 
             node_learner.train(model,
                                edges=edges,
@@ -190,15 +203,17 @@ if __name__ == "__main__":
 
             log.info('time: %.2fs' % (timeit.default_timer() - start_time))
             save_embedding(model.node_embedding, model.vocab,
+                           path=f"data/{output_file}",
                            file_name=f"{output_file}_alpha-{alpha}_beta-{beta}_ws-{window_size}_neg-{negative}_lr-{lr}_icom-{iter_com}_ind-{iter_node}_k-{model.k}_ds-{down_sampling}")
 
             # DEBUG plot after each ComE iteration
-            '''plot_utils.node_space_plot_2d_ellipsoid(model.node_embedding,
-                                                    labels=model.classify_nodes(),
-                                                    means=com_learner.g_mixture.means_,
-                                                    covariances=com_learner.g_mixture.covariances_,
-                                                    plot_name=f"k{k}_i{i}",
-                                                    save=True)'''
+            if not should_animate and should_plot_steps:
+                plot_utils.node_space_plot_2d_ellipsoid(model.node_embedding,
+                                                        labels=model.classify_nodes(),
+                                                        means=com_learner.g_mixture.means_,
+                                                        covariances=com_learner.g_mixture.covariances_,
+                                                        plot_name=f"k{k}_i{i}",
+                                                        save=True)
 
         # ### print model
         node_classification = model.classify_nodes()
@@ -212,7 +227,7 @@ if __name__ == "__main__":
               "=>node_classification: ", node_classification, "\n", )
 
         # ### Animation
-        if animate:
+        if should_animate:
             anim = ArtistAnimation(anim_fig, anim_artists, interval=500, blit=True, repeat=False)
             #anim.to_html5_video()
             # export animation as gif:
@@ -221,9 +236,9 @@ if __name__ == "__main__":
 
         # ### write predictions to labels_pred.txt
         # save com_learner.g_mixture to file
-        joblib.dump(com_learner.g_mixture, './data/g_mixture.joblib')
+        joblib.dump(com_learner.g_mixture, f'./model/g_mixture_{output_file}.joblib')
         # using predictions from com_learner.g_mixture with node_embeddings
-        np.savetxt('./data/labels_pred.txt', model.classify_nodes())
+        np.savetxt(f'./data/{output_file}/labels_pred.txt', model.classify_nodes())
 
         # ### NMI
         labels_true, _ = load_ground_true(path="data/" + input_file, file_name=input_file)
@@ -236,7 +251,7 @@ if __name__ == "__main__":
 
         # ### plotting
         plot_name = str(k)
-        if representation_size == 2:
+        if should_plot:
             # graph_plot
             plot_utils.graph_plot(G, labels=node_classification, plot_name=plot_name, save=True)
             # node_space_plot_2D
@@ -248,5 +263,5 @@ if __name__ == "__main__":
                                                     covariances=com_learner.g_mixture.covariances_,
                                                     plot_name=plot_name,
                                                     save=True)
-        # bar_plot_bgmm_pi
-        plot_utils.bar_plot_bgmm_weights(com_learner.g_mixture.weights_, plot_name=plot_name, save=True)
+            # bar_plot_bgmm_pi
+            plot_utils.bar_plot_bgmm_weights(com_learner.g_mixture.weights_, plot_name=plot_name, save=True)
