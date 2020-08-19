@@ -53,12 +53,12 @@ if __name__ == "__main__":
 
     number_walks = 10  # γ: number of walks for each node
     walk_length = 80  # l: length of each walk
-    representation_size = 128  # size of the embedding
+    representation_size = 2  # size of the embedding
     num_workers = 10  # number of thread
     num_iter = 3  # number of overall iteration
     com_n_init = 3  # number of inits for community embedding (default: 10)
     reg_covar = 0.00001  # regularization coefficient to ensure positive covar
-    input_file = 'facebook'  # name of the input file
+    input_file = 'karate_club'  # name of the input file
     output_file = input_file  # name of the output file
     batch_size = 50
     window_size = 10  # ζ: windows size used to compute the context embedding
@@ -70,7 +70,7 @@ if __name__ == "__main__":
     come_model_type = "BGMM"  # type of the Community Embedding model: GMM/BGMM
     weight_concentration_prior = 1e-5  # dirichlet concentration of each BGMM component to (de)activate components
 
-    ks = [10]  # number of communities to initialize the GMM/BGMM with
+    ks = [5]  # number of communities to initialize the GMM/BGMM with
     walks_filebase = os.path.join('data', output_file)  # where read/write the sampled path
 
     # CONSTRUCT THE GRAPH
@@ -79,20 +79,17 @@ if __name__ == "__main__":
     # G = graph_utils.load_matfile(os.path.join('./data', input_file, input_file + '.mat'), undirected=True)
 
     # load karate club directly
-    # G = nx.karate_club_graph()  # DEBUG run on karate club graph, make sure to mkdir ./data/karate_club
+    G = nx.karate_club_graph()  # DEBUG run on karate club graph, make sure to mkdir ./data/karate_club
 
     # load from edgelist csv
-    G = graph_utils.load_edgelist(os.path.join('./data', input_file, input_file + '.csv'), source="u", target="v")
+    # G = graph_utils.load_edgelist(os.path.join('./data', input_file, input_file + '.csv'), source="u", target="v")
 
-    '''
     # DEBUG remove some edges for karate_club
     print("PRE NUM_OF_EDGES: ", G.number_of_edges())
-    G.remove_edge(0, 10)
-    G.remove_edge(5, 16)
-    G.remove_edge(33, 29)
-    G.remove_edge(32, 15)
+    G.remove_edge(33, 23)
+    G.remove_edge(0, 1)
+    G.remove_edge(32, 30)
     print("POST NUM_OF_EDGES: ", G.number_of_edges())
-    '''
 
     print("G.number_of_nodes: ", G.number_of_nodes())
     print("G.number_of_edges: ", G.number_of_edges())
