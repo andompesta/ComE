@@ -46,20 +46,20 @@ except AttributeError:
 
 if __name__ == "__main__":
 
-    should_animate = False
-    should_plot_steps = False
+    should_animate = True
+    should_plot_steps = True
     should_plot = True
     com_iter_step = 100
 
     number_walks = 10  # γ: number of walks for each node
     walk_length = 80  # l: length of each walk
-    representation_size = 128  # size of the embedding
+    representation_size = 2  # size of the embedding
     num_workers = 10  # number of thread
     num_iter = 3  # number of overall iteration
     com_n_init = 3  # number of inits for community embedding (default: 10)
     reg_covar = 0.00001  # regularization coefficient to ensure positive covar
-    input_file = 'movie_ratings'  # name of the input file
-    output_file = 'movie_ratings'  # name of the output file
+    input_file = 'karate_club'  # name of the input file
+    output_file = input_file  # name of the output file
     batch_size = 50
     window_size = 10  # ζ: windows size used to compute the context embedding
     negative = 5  # m: number of negative sample
@@ -70,16 +70,29 @@ if __name__ == "__main__":
     come_model_type = "BGMM"  # type of the Community Embedding model: GMM/BGMM
     weight_concentration_prior = 1e-5  # dirichlet concentration of each BGMM component to (de)activate components
 
-    ks = [10]  # number of communities to initialize the GMM/BGMM with
+    ks = [5]  # number of communities to initialize the GMM/BGMM with
     walks_filebase = os.path.join('data', output_file)  # where read/write the sampled path
 
     # CONSTRUCT THE GRAPH
+
     # load from matfile
-    #G = graph_utils.load_matfile(os.path.join('./data', input_file, input_file + '.mat'), undirected=True)
+    # G = graph_utils.load_matfile(os.path.join('./data', input_file, input_file + '.mat'), undirected=True)
+
     # load karate club directly
-    #G = nx.karate_club_graph()  # DEBUG run on karate club graph, make sure to mkdir ./data/karate_club
+    G = nx.karate_club_graph()  # DEBUG run on karate club graph, make sure to mkdir ./data/karate_club
+
     # load from edgelist csv
-    G = graph_utils.load_edgelist(os.path.join('./data', input_file, input_file + '.csv'), source="userId", target="movieId", weight="rating")
+    # G = graph_utils.load_edgelist(os.path.join('./data', input_file, input_file + '.csv'), source="u", target="v")
+
+    # DEBUG remove some edges for karate_club
+    print("PRE NUM_OF_EDGES: ", G.number_of_edges())
+    G.remove_edge(33, 23)
+    G.remove_edge(0, 1)
+    G.remove_edge(32, 30)
+    print("POST NUM_OF_EDGES: ", G.number_of_edges())
+
+    print("G.number_of_nodes: ", G.number_of_nodes())
+    print("G.number_of_edges: ", G.number_of_edges())
 
     # Sampling the random walks for context
     log.info("sampling the paths")
@@ -163,6 +176,7 @@ if __name__ == "__main__":
                 with ignore_warnings(category=ConvergenceWarning):
                     com_learner.fit(model)
 
+
                 def animate_model():
                     if should_animate:
                         artists_step = plot_utils.animate_step(anim_ax,
@@ -171,6 +185,7 @@ if __name__ == "__main__":
                                                                i_com=com_learner.n_iter,
                                                                converged=com_learner.converged)
                         anim_artists.append(artists_step)
+
 
                 # community converged?
                 if not com_learner.converged:
@@ -188,6 +203,7 @@ if __name__ == "__main__":
                                                             means=com_learner.g_mixture.means_,
                                                             covariances=com_learner.g_mixture.covariances_,
                                                             plot_name=f"k{k}_i{i}_{com_max_iter:03}",
+                                                            path=f"./plots/{output_file}",
                                                             save=True)
 
             node_learner.train(model,
@@ -213,6 +229,7 @@ if __name__ == "__main__":
                                                         means=com_learner.g_mixture.means_,
                                                         covariances=com_learner.g_mixture.covariances_,
                                                         plot_name=f"k{k}_i{i}",
+                                                        path=f"./plots/{output_file}",
                                                         save=True)
 
         # ### print model
@@ -229,10 +246,10 @@ if __name__ == "__main__":
         # ### Animation
         if should_animate:
             anim = ArtistAnimation(anim_fig, anim_artists, interval=500, blit=True, repeat=False)
-            #anim.to_html5_video()
+            # anim.to_html5_video()
             # export animation as gif:
             # you may need to install "imagemagick" (ex.: brew install imagemagick)
-            anim.save('./plots/animation.gif', writer='imagemagick')
+            anim.save(f"./plots/{output_file}/animation.gif", writer='imagemagick')
 
         # ### write predictions to labels_pred.txt
         # save com_learner.g_mixture to file
@@ -253,15 +270,27 @@ if __name__ == "__main__":
         plot_name = str(k)
         if should_plot:
             # graph_plot
-            plot_utils.graph_plot(G, labels=node_classification, plot_name=plot_name, save=True)
+            plot_utils.graph_plot(G,
+                                  labels=node_classification,
+                                  plot_name=plot_name,
+                                  path=f"./plots/{output_file}",
+                                  save=True)
             # node_space_plot_2D
-            plot_utils.node_space_plot_2d(model.node_embedding, labels=node_classification, plot_name=plot_name, save=True)
+            plot_utils.node_space_plot_2d(model.node_embedding,
+                                          labels=node_classification,
+                                          plot_name=plot_name,
+                                          path=f"./plots/{output_file}",
+                                          save=True)
             # node_space_plot_2d_ellipsoid
             plot_utils.node_space_plot_2d_ellipsoid(model.node_embedding,
                                                     labels=node_classification,
                                                     means=com_learner.g_mixture.means_,
                                                     covariances=com_learner.g_mixture.covariances_,
                                                     plot_name=plot_name,
+                                                    path=f"./plots/{output_file}",
                                                     save=True)
             # bar_plot_bgmm_pi
-            plot_utils.bar_plot_bgmm_weights(com_learner.g_mixture.weights_, plot_name=plot_name, save=True)
+            plot_utils.bar_plot_bgmm_weights(com_learner.g_mixture.weights_,
+                                             plot_name=plot_name,
+                                             path=f"./plots/{output_file}",
+                                             save=True)
