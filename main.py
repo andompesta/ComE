@@ -53,12 +53,12 @@ if __name__ == "__main__":
 
     number_walks = 10  # γ: number of walks for each node
     walk_length = 80  # l: length of each walk
-    representation_size = 2  # size of the embedding
+    representation_size = 128  # size of the embedding
     num_workers = 10  # number of thread
-    num_iter = 3  # number of overall iteration
+    num_iter = 2  # number of overall iteration
     com_n_init = 3  # number of inits for community embedding (default: 10)
     reg_covar = 0.00001  # regularization coefficient to ensure positive covar
-    input_file = 'karate_club'  # name of the input file
+    input_file = 'Dblp'  # name of the input file
     output_file = input_file  # name of the output file
     batch_size = 50
     window_size = 10  # ζ: windows size used to compute the context embedding
@@ -70,7 +70,7 @@ if __name__ == "__main__":
     come_model_type = "BGMM"  # type of the Community Embedding model: GMM/BGMM
     weight_concentration_prior = 1e-5  # dirichlet concentration of each BGMM component to (de)activate components
 
-    ks = [5]  # number of communities to initialize the GMM/BGMM with
+    ks = [2, 5, 10, 20]  # number of communities to initialize the GMM/BGMM with
     walks_filebase = os.path.join('data', output_file)  # where read/write the sampled path
 
     # CONSTRUCT THE GRAPH
