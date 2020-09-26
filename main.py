@@ -57,7 +57,7 @@ if __name__ == "__main__":
     representation_size = 128  # size of the embedding
     num_workers = 10  # number of thread
     num_iter = 2  # number of overall iteration
-    com_n_init = 3  # number of inits for community embedding (default: 10)
+    com_n_init = 10  # number of inits for community embedding (default: 10)
     reg_covar = 0.00001  # regularization coefficient to ensure positive covar
     input_file = 'Dblp'  # name of the input file
     output_file = input_file  # name of the output file
