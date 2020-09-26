@@ -250,22 +250,22 @@ if __name__ == "__main__":
             # anim.to_html5_video()
             # export animation as gif:
             # you may need to install "imagemagick" (ex.: brew install imagemagick)
-            anim.save(f"./plots/{output_file}/animation.gif", writer='imagemagick')
+            anim.save(f"./plots/{output_file}/animation_{k}.gif", writer='imagemagick')
 
         # ### write predictions to labels_pred.txt
         # save com_learner.g_mixture to file
-        joblib.dump(com_learner.g_mixture, f'./model/g_mixture_{output_file}.joblib')
+        joblib.dump(com_learner.g_mixture, f'./model/g_mixture_{output_file}_{k}.joblib')
         # using predictions from com_learner.g_mixture with node_embeddings
-        np.savetxt(f'./data/{output_file}/labels_pred.txt', model.classify_nodes())
+        np.savetxt(f'./data/{output_file}/labels_pred_{k}.txt', model.classify_nodes())
 
         # ### NMI
         labels_true, _ = load_ground_true(path="data/" + input_file, file_name=input_file)
         print("labels_true: ", labels_true)
         if labels_true is not None:
             nmi = metrics.normalized_mutual_info_score(labels_true, node_classification)
-            print("===NMI=== ", nmi)
+            print(f"===NMI=== for K={k}: ", nmi)
         else:
-            print("===NMI=== could not be computed")
+            print(f"===NMI=== for K={k} could not be computed")
 
         # ### plotting
         plot_name = str(k)
