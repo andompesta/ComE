@@ -46,8 +46,9 @@ except AttributeError:
 
 if __name__ == "__main__":
 
-    should_animate = True
-    should_plot_steps = True
+    verbose = False
+    should_animate = False
+    should_plot_steps = False
     should_plot = True
     com_iter_step = 100
 
@@ -164,7 +165,8 @@ if __name__ == "__main__":
                 params_anim = {}
                 com_max_iter += com_iter_step if should_animate else 100
                 if should_animate:
-                    log.info(f"->com_max_iter={com_max_iter}")
+                    if verbose:
+                        log.info(f"->com_max_iter={com_max_iter}")
                     params_anim['max_iter'] = com_max_iter
 
                 com_learner.reset_mixture(model,
@@ -218,7 +220,8 @@ if __name__ == "__main__":
                                alpha=alpha,
                                chunksize=batch_size)
 
-            log.info('time: %.2fs' % (timeit.default_timer() - start_time))
+            if verbose:
+                log.info('time: %.2fs' % (timeit.default_timer() - start_time))
             save_embedding(model.node_embedding, model.vocab,
                            path=f"data/{output_file}",
                            file_name=f"{output_file}_alpha-{alpha}_beta-{beta}_ws-{window_size}_neg-{negative}_lr-{lr}_icom-{iter_com}_ind-{iter_node}_k-{model.k}_ds-{down_sampling}")
@@ -233,16 +236,19 @@ if __name__ == "__main__":
                                                         path=f"./plots/{output_file}",
                                                         save=True)
 
-        # ### print model
+        # compute classifications
         node_classification = model.classify_nodes()
-        print("model:\n",
-              "  model.node_embedding: ", model.node_embedding, "\n",
-              "  model.context_embedding: ", model.context_embedding, "\n",
-              "  model.centroid: ", model.centroid, "\n",
-              "  model.covariance_mat: ", model.covariance_mat, "\n",
-              "  model.inv_covariance_mat: ", model.inv_covariance_mat, "\n",
-              "  model.pi: ", model.pi, "\n",
-              "=>node_classification: ", node_classification, "\n", )
+
+        # ### print model
+        if verbose:
+            print("model:\n",
+                  "  model.node_embedding: ", model.node_embedding, "\n",
+                  "  model.context_embedding: ", model.context_embedding, "\n",
+                  "  model.centroid: ", model.centroid, "\n",
+                  "  model.covariance_mat: ", model.covariance_mat, "\n",
+                  "  model.inv_covariance_mat: ", model.inv_covariance_mat, "\n",
+                  "  model.pi: ", model.pi, "\n",
+                  "=>node_classification: ", node_classification, "\n", )
 
         # ### Animation
         if should_animate:
