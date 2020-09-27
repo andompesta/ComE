@@ -46,9 +46,9 @@ except AttributeError:
 
 if __name__ == "__main__":
 
-    verbose = False
-    should_animate = False
-    should_plot_steps = False
+    verbose = True
+    should_animate = True
+    should_plot_steps = True
     should_plot = True
     com_iter_step = 100
 
