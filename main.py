@@ -54,7 +54,7 @@ if __name__ == "__main__":
 
     number_walks = 10  # γ: number of walks for each node
     walk_length = 80  # l: length of each walk
-    representation_size = 4  # size of the embedding
+    representation_size = 8  # size of the embedding
     num_workers = 10  # number of thread
     num_iter = 3  # number of overall iteration
     com_n_init = 10  # number of inits for community embedding (default: 10)
