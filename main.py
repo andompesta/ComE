@@ -54,7 +54,7 @@ if __name__ == "__main__":
 
     number_walks = 10  # γ: number of walks for each node
     walk_length = 80  # l: length of each walk
-    representation_size = 8  # size of the embedding
+    representation_size = 128  # size of the embedding
     num_workers = 10  # number of thread
     num_iter = 3  # number of overall iteration
     com_n_init = 10  # number of inits for community embedding (default: 10)
@@ -68,10 +68,10 @@ if __name__ == "__main__":
     alpha_betas = [(0.1, 0.1)]  # Trade-off parameter for context/community embedding
     down_sampling = 0.0
 
-    come_model_type = "BGMM"  # type of the Community Embedding model: GMM/BGMM
+    come_model_type = "GMM"  # type of the Community Embedding model: GMM/BGMM
     weight_concentration_prior = 1e-5  # dirichlet concentration of each BGMM component to (de)activate components
 
-    ks = [20, 10, 5, 2]  # number of communities to initialize the GMM/BGMM with
+    ks = [20]  # number of communities to initialize the GMM/BGMM with
     walks_filebase = os.path.join('data', output_file)  # where read/write the sampled path
 
     # CONSTRUCT THE GRAPH
