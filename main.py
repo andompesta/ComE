@@ -224,7 +224,7 @@ if __name__ == "__main__":
                 log.info('time: %.2fs' % (timeit.default_timer() - start_time))
             save_embedding(model.node_embedding, model.vocab,
                            path=f"data/{output_file}",
-                           file_name=f"{output_file}_alpha-{alpha}_beta-{beta}_ws-{window_size}_neg-{negative}_lr-{lr}_icom-{iter_com}_ind-{iter_node}_k-{model.k}_ds-{down_sampling}_type-{come_model_type}")
+                           file_name=f"{output_file}_alpha-{alpha}_beta-{beta}_ws-{window_size}_neg-{negative}_lr-{lr}_icom-{iter_com}_ind-{iter_node}_ds-{down_sampling}_d-{representation_size}_type-{come_model_type}_k-{model.k}")
 
             # DEBUG plot after each ComE iteration
             if not should_animate and should_plot_steps:
@@ -232,7 +232,7 @@ if __name__ == "__main__":
                                                         labels=model.classify_nodes(),
                                                         means=com_learner.g_mixture.means_,
                                                         covariances=com_learner.g_mixture.covariances_,
-                                                        plot_name=f"{come_model_type}_k{k}_i{i}",
+                                                        plot_name=f"{come_model_type}_d{representation_size}_k{k}_i{i}",
                                                         path=f"./plots/{output_file}",
                                                         save=True)
 
@@ -256,25 +256,25 @@ if __name__ == "__main__":
             # anim.to_html5_video()
             # export animation as gif:
             # you may need to install "imagemagick" (ex.: brew install imagemagick)
-            anim.save(f"./plots/{output_file}/animation_{come_model_type}_{k}.gif", writer='imagemagick')
+            anim.save(f"./plots/{output_file}/animation_{come_model_type}_d{representation_size}_k{k}.gif", writer='imagemagick')
 
         # ### write predictions to labels_pred.txt
         # save com_learner.g_mixture to file
-        joblib.dump(com_learner.g_mixture, f'./model/g_mixture_{output_file}_{come_model_type}_{k}.joblib')
+        joblib.dump(com_learner.g_mixture, f'./model/g_mixture_{output_file}_{come_model_type}_d{representation_size}_k{k}.joblib')
         # using predictions from com_learner.g_mixture with node_embeddings
-        np.savetxt(f'./data/{output_file}/labels_pred_{come_model_type}_{k}.txt', model.classify_nodes())
+        np.savetxt(f'./data/{output_file}/labels_pred_{come_model_type}_d{representation_size}_k{k}.txt', model.classify_nodes())
 
         # ### NMI
         labels_true, _ = load_ground_true(path="data/" + input_file, file_name=input_file)
         print("labels_true: ", labels_true)
         if labels_true is not None:
             nmi = metrics.normalized_mutual_info_score(labels_true, node_classification)
-            print(f"===NMI=== for type={come_model_type} with K={k}: ", nmi)
+            print(f"===NMI=== for type={come_model_type} with d={representation_size} and K={k}: ", nmi)
         else:
-            print(f"===NMI=== for type={come_model_type} with K={k} could not be computed")
+            print(f"===NMI=== for type={come_model_type} with d={representation_size} and K={k} could not be computed")
 
         # ### plotting
-        plot_name = f"{come_model_type}_{k}"
+        plot_name = f"{come_model_type}_d{representation_size}_k{k}"
         if should_plot:
             # graph_plot
             plot_utils.graph_plot(G,
