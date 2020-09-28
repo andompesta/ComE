@@ -68,10 +68,10 @@ if __name__ == "__main__":
     alpha_betas = [(0.1, 0.1)]  # Trade-off parameter for context/community embedding
     down_sampling = 0.0
 
-    come_model_type = "GMM"  # type of the Community Embedding model: GMM/BGMM
+    come_model_type = "BGMM"  # type of the Community Embedding model: GMM/BGMM
     weight_concentration_prior = 1e-5  # dirichlet concentration of each BGMM component to (de)activate components
 
-    ks = [20]  # number of communities to initialize the GMM/BGMM with
+    ks = [20, 10, 5, 2]  # number of communities to initialize the GMM/BGMM with
     walks_filebase = os.path.join('data', output_file)  # where read/write the sampled path
 
     # CONSTRUCT THE GRAPH
