@@ -48,7 +48,7 @@ if __name__ == "__main__":
 
     verbose = True
     should_animate = False
-    should_plot_steps = True
+    should_plot_steps = False
     should_plot = True
     com_iter_step = 100
 
@@ -71,7 +71,7 @@ if __name__ == "__main__":
     come_model_type = "GMM"  # type of the Community Embedding model: GMM/BGMM
     weight_concentration_prior = 1e-5  # dirichlet concentration of each BGMM component to (de)activate components
 
-    ks = [10, 5, 2]  # number of communities to initialize the GMM/BGMM with
+    ks = [2, 5, 10]  # number of communities to initialize the GMM/BGMM with
     walks_filebase = os.path.join('data', output_file)  # where read/write the sampled path
 
     # CONSTRUCT THE GRAPH
