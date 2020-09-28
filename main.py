@@ -48,7 +48,7 @@ if __name__ == "__main__":
 
     verbose = True
     should_animate = False
-    should_plot_steps = False
+    should_plot_steps = True
     should_plot = True
     com_iter_step = 100
 
@@ -59,30 +59,30 @@ if __name__ == "__main__":
     num_iter = 3  # number of overall iteration
     com_n_init = 10  # number of inits for community embedding (default: 10)
     reg_covar = 0.00001  # regularization coefficient to ensure positive covar
-    input_file = 'Dblp'  # name of the input file
+    input_file = 'facebook'  # name of the input file
     output_file = input_file  # name of the output file
     batch_size = 50
     window_size = 10  # ζ: windows size used to compute the context embedding
     negative = 5  # m: number of negative sample
     lr = 0.025  # learning rate
     alpha_betas = [(0.1, 0.1)]  # Trade-off parameter for context/community embedding
-    down_sampling = 0.0
+    down_sampling = 0.9
 
-    come_model_type = "GMM"  # type of the Community Embedding model: GMM/BGMM
+    come_model_type = "BGMM"  # type of the Community Embedding model: GMM/BGMM
     weight_concentration_prior = 1e-5  # dirichlet concentration of each BGMM component to (de)activate components
 
-    ks = [2, 5, 10]  # number of communities to initialize the GMM/BGMM with
+    ks = [10]  # number of communities to initialize the GMM/BGMM with
     walks_filebase = os.path.join('data', output_file)  # where read/write the sampled path
 
     # CONSTRUCT THE GRAPH
 
     # load from matfile
-    G = graph_utils.load_matfile(os.path.join('./data', input_file, input_file + '.mat'), undirected=True)
+    # G = graph_utils.load_matfile(os.path.join('./data', input_file, input_file + '.mat'), undirected=True)
     # load karate club directly
     # G = nx.karate_club_graph()  # DEBUG run on karate club graph, make sure to mkdir ./data/karate_club
 
     # load from edgelist csv
-    # G = graph_utils.load_edgelist(os.path.join('./data', input_file, input_file + '.csv'), source="u", target="v")
+    G = graph_utils.load_edgelist(os.path.join('./data', input_file, input_file + '.csv'), source="u", target="v")
 
     # DEBUG remove some edges for karate_club
     '''
