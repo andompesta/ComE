@@ -186,7 +186,8 @@ if __name__ == "__main__":
                                                                model,
                                                                i=i,
                                                                i_com=com_learner.n_iter,
-                                                               converged=com_learner.converged)
+                                                               converged=com_learner.converged,
+                                                               show_node_ids=False)
                         anim_artists.append(artists_step)
 
 
