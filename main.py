@@ -66,7 +66,7 @@ if __name__ == "__main__":
     negative = 5  # m: number of negative sample
     lr = 0.025  # learning rate
     alpha_betas = [(0.1, 0.1)]  # Trade-off parameter for context/community embedding
-    down_sampling = 0.9
+    down_sampling = 0.0
 
     come_model_type = "BGMM"  # type of the Community Embedding model: GMM/BGMM
     weight_concentration_prior = 1e-5  # dirichlet concentration of each BGMM component to (de)activate components
@@ -193,11 +193,11 @@ if __name__ == "__main__":
                 # community converged?
                 if not com_learner.converged:
                     log.info(f'iter {i}.{com_learner.n_iter} did not converge.')
-                    animate_model()
                 else:
                     log.info(f'iter {i}.{com_learner.n_iter} converged!')
+
+                if should_animate:
                     animate_model()
-                    animate_model()  # if converged, animate twice
 
                 # DEBUG plot after each community iteration
                 if not should_animate and should_plot_steps:

@@ -192,12 +192,17 @@ def get_ellipses_artists(labels=None,
     return artists
 
 
-def animate_step(ax, model, i=None, i_com=None, converged=False):
+def animate_step(ax, model, i=None, i_com=None, converged=False, max_nodes=200):
     # extract parameters
     # nodes
     nodes = model.node_embedding
-    # communities
     labels = model.classify_nodes()
+    # down sampling
+    if max_nodes < len(nodes):
+        nodes_i = np.random.choice(len(nodes), max_nodes, replace=False)
+        nodes = nodes[nodes_i]
+        labels = labels[nodes_i]
+    # communities
     means = model.centroid
     covars = model.covariance_mat
 
@@ -211,7 +216,7 @@ def animate_step(ax, model, i=None, i_com=None, converged=False):
     for (i_node, node) in enumerate(nodes):
         nodes_ids.append(ax.text(node[0], node[1], str(i_node), size=12))
     # communities
-    ellipses = get_ellipses_artists(labels=labels, means=means, covariances=covars)
+    ellipses = get_ellipses_artists(labels=labels, means=means[2, :], covariances=covars[2, :])
     for ellipse in ellipses:
         ellipse.set_clip_box(ax.bbox)
         ax.add_artist(ellipse)
