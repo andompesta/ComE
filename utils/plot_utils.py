@@ -173,6 +173,11 @@ def get_ellipses_artists(labels=None,
             # components.
             if not np.any(labels == i):
                 continue
+
+            # higher dim -> 2D
+            mean = mean[:2]
+            covar = covar[:2,:2]
+
             # computations for showing ellipses
             v, w = np.linalg.eigh(2.5 * covar)
             v = 2. * np.sqrt(2.) * np.sqrt(v)
@@ -216,7 +221,7 @@ def animate_step(ax, model, i=None, i_com=None, converged=False, max_nodes=200):
     for (i_node, node) in enumerate(nodes):
         nodes_ids.append(ax.text(node[0], node[1], str(i_node), size=12))
     # communities
-    ellipses = get_ellipses_artists(labels=labels, means=means[2, :], covariances=covars[2, :])
+    ellipses = get_ellipses_artists(labels=labels, means=means, covariances=covars)
     for ellipse in ellipses:
         ellipse.set_clip_box(ax.bbox)
         ax.add_artist(ellipse)
