@@ -197,7 +197,7 @@ def get_ellipses_artists(labels=None,
     return artists
 
 
-def animate_step(ax, model, i=None, i_com=None, converged=False, max_nodes=200):
+def animate_step(ax, model, i=None, i_com=None, converged=False, max_nodes=400):
     # extract parameters
     # nodes
     nodes = model.node_embedding
