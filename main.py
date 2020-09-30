@@ -282,7 +282,8 @@ if __name__ == "__main__":
                                   labels=node_classification,
                                   plot_name=plot_name,
                                   path=f"./plots/{output_file}",
-                                  save=True)
+                                  save=True,
+                                  show_labels=False)
             # node_space_plot_2D
             plot_utils.node_space_plot_2d(model.node_embedding,
                                           labels=node_classification,

@@ -36,11 +36,18 @@ def graph_plot(G,
                labels=None,
                path="./plots",
                plot_name="graph",
-               save=True):
+               save=True,
+               show_labels=True):
     spring_pos = nx.spring_layout(G)
     plt.figure(figsize=(5, 5))
     plt.axis("off")
-    nx.draw_networkx(G, node_color=labels, pos=spring_pos, camp=plt.get_cmap(CAMP), nodelist=sorted(G.nodes()))
+    nx.draw_networkx(G,
+                     node_color=labels,
+                     pos=spring_pos,
+                     camp=plt.get_cmap(CAMP),
+                     nodelist=sorted(G.nodes()),
+                     with_labels=show_labels,
+                     node_size=42)
 
     if save:
         if not exists(path):
