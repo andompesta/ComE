@@ -227,8 +227,8 @@ def animate_step(ax,
 
     # animation
     # counter
-    counter = ax.text(0.05, 0.95, f"{i}.{i_com}{' converged' if converged else ''}", fontsize=16, horizontalalignment='left',
-                      verticalalignment='top', transform=ax.transAxes)
+    counter = ax.text(0.05, 0.95, f"{i}.{i_com}{' converged' if converged else ''}", fontsize=16,
+                      horizontalalignment='left', verticalalignment='top', transform=ax.transAxes)
     # nodes
     nodes_scatter = ax.scatter(nodes[:, 0], nodes[:, 1], 20, c=labels, marker="o", cmap=CMAP)
     nodes_ids = []
