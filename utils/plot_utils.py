@@ -8,7 +8,7 @@ from os.path import exists, join as path_join
 from os import makedirs
 import numpy as np
 
-CAMP = 'viridis'
+CMAP = 'viridis'
 
 
 def _binary_commonity(G, label):
@@ -19,7 +19,7 @@ def _binary_commonity(G, label):
     :param label: list of nodes length. for each node represent its label
     :return: list of the color for each node
     '''
-    color_map = list(plt.get_cmap(CAMP)(np.linspace(0.0, 1, 4)))
+    color_map = list(plt.get_cmap(CMAP)(np.linspace(0.0, 1, 4)))
     nodes_color = np.zeros((G.number_of_nodes(), 4))
 
     for index, node_id in enumerate(sorted(list(G.nodes()))):
@@ -44,7 +44,7 @@ def graph_plot(G,
     nx.draw_networkx(G,
                      node_color=labels,
                      pos=spring_pos,
-                     camp=plt.get_cmap(CAMP),
+                     cmap=plt.get_cmap(CMAP),
                      nodelist=sorted(G.nodes()),
                      with_labels=show_labels,
                      node_size=42)
@@ -72,7 +72,7 @@ def node_space_plot_2d(embedding,
     nodes_id = np.array(list(range(len(embedding))))
     data = np.concatenate((embedding, np.expand_dims(nodes_id, axis=1),), axis=1)
 
-    plt.scatter(data[:, 0], data[:, 1], c=labels, marker='o', cmap=CAMP)
+    plt.scatter(data[:, 0], data[:, 1], c=labels, marker='o', cmap=CMAP)
 
     for node in data:
         ax.text(node[0], node[1], '%s' % (str(int(node[2]))), size=10)
@@ -123,7 +123,7 @@ def node_space_plot_2d_ellipsoid(embedding,
     nodes_id = np.array(list(range(len(embedding))))
     data = np.concatenate((embedding, np.expand_dims(nodes_id, axis=1),), axis=1)
 
-    plt.scatter(data[:, 0], data[:, 1], c=labels, marker='o', cmap=CAMP)
+    plt.scatter(data[:, 0], data[:, 1], c=labels, marker='o', cmap=CMAP)
 
     for node in data:
         ax.text(node[0], node[1], '%s' % (str(int(node[2]))), size=10)
@@ -204,7 +204,14 @@ def get_ellipses_artists(labels=None,
     return artists
 
 
-def animate_step(ax, model, i=None, i_com=None, converged=False, max_nodes=999999, show_node_ids=True, show_communities=True):
+def animate_step(ax,
+                 model,
+                 i=None,
+                 i_com=None,
+                 converged=False,
+                 max_nodes=999999,
+                 show_node_ids=True,
+                 show_communities=True):
     # extract parameters
     # nodes
     nodes = model.node_embedding
@@ -223,7 +230,7 @@ def animate_step(ax, model, i=None, i_com=None, converged=False, max_nodes=99999
     counter = ax.text(0.05, 0.95, f"{i}.{i_com}{' converged' if converged else ''}", fontsize=16, horizontalalignment='left',
                       verticalalignment='top', transform=ax.transAxes)
     # nodes
-    nodes_scatter = ax.scatter(nodes[:, 0], nodes[:, 1], 20, c=labels, marker="o")
+    nodes_scatter = ax.scatter(nodes[:, 0], nodes[:, 1], 20, c=labels, marker="o", cmap=CMAP)
     nodes_ids = []
     if show_node_ids:
         for (i_node, node) in enumerate(nodes):
