@@ -179,7 +179,6 @@ if __name__ == "__main__":
                 with ignore_warnings(category=ConvergenceWarning):
                     com_learner.fit(model)
 
-
                 def animate_model():
                     if should_animate:
                         artists_step = plot_utils.animate_step(anim_ax,
@@ -187,7 +186,8 @@ if __name__ == "__main__":
                                                                i=i,
                                                                i_com=com_learner.n_iter,
                                                                converged=com_learner.converged,
-                                                               show_node_ids=False)
+                                                               show_node_ids=False,
+                                                               show_communities=False)
                         anim_artists.append(artists_step)
 
 

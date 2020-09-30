@@ -197,7 +197,7 @@ def get_ellipses_artists(labels=None,
     return artists
 
 
-def animate_step(ax, model, i=None, i_com=None, converged=False, max_nodes=999999, show_node_ids=True):
+def animate_step(ax, model, i=None, i_com=None, converged=False, max_nodes=999999, show_node_ids=True, show_communities=True):
     # extract parameters
     # nodes
     nodes = model.node_embedding
@@ -222,10 +222,12 @@ def animate_step(ax, model, i=None, i_com=None, converged=False, max_nodes=99999
         for (i_node, node) in enumerate(nodes):
             nodes_ids.append(ax.text(node[0], node[1], str(i_node), size=12))
     # communities
-    ellipses = get_ellipses_artists(labels=labels, means=means, covariances=covars)
-    for ellipse in ellipses:
-        ellipse.set_clip_box(ax.bbox)
-        ax.add_artist(ellipse)
+    ellipses= []
+    if show_communities:
+        ellipses = get_ellipses_artists(labels=labels, means=means, covariances=covars)
+        for ellipse in ellipses:
+            ellipse.set_clip_box(ax.bbox)
+            ax.add_artist(ellipse)
 
     # return artists
     return ellipses + nodes_ids + [nodes_scatter, counter]
