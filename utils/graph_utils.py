@@ -34,9 +34,9 @@ def __random_walk__(G, path_length, start, alpha=0, rand=random.Random()):
 
     while len(path) < path_length:
         cur = path[-1]
-        if len(G.neighbors(cur)) > 0:
+        if G.degree[cur] > 0:
             if rand.random() >= alpha:
-                path.append(rand.choice(G.neighbors(cur)))
+                path.append(rand.choice(list(G.neighbors(cur))))
             else:
                 path.append(path[0])
         else:
@@ -108,9 +108,9 @@ def load_adjacencylist(file_, undirected=False, chunksize=10000):
 
 
 def _write_walks_to_disk(args):
-    num_paths, path_length, alpha, rand, f = args
-    G = __current_graph
+    G, num_paths, path_length, alpha, rand, f = args
     t_0 = time()
+    __vertex2str = {v:str(v) for v in G.nodes()}
     with open(f, 'w') as fout:
         for walk in build_deepwalk_corpus_iter(G=G, num_paths=num_paths, path_length=path_length, alpha=alpha, rand=rand):
             fout.write(u"{}\n".format(u" ".join(__vertex2str[v] for v in walk)))
@@ -129,10 +129,7 @@ def write_walks_to_disk(G, filebase, num_paths, path_length, alpha=0, rand=rando
     :param num_workers: number of thread used to execute the job
     :return:
     '''
-    global __current_graph
-    global __vertex2str
-    __current_graph = G
-    __vertex2str = {v:str(v) for v in G.nodes()}
+
     files_list = ["{}.{}".format(filebase, str(x)) for x in range(num_paths)]
     expected_size = len(G)
     args_list = []
@@ -145,7 +142,7 @@ def write_walks_to_disk(G, filebase, num_paths, path_length, alpha=0, rand=rando
 
     with ProcessPoolExecutor(max_workers=num_workers) as executor:
         for size, file_, ppw in zip(executor.map(count_lines, files_list), files_list, paths_per_worker):
-            args_list.append((ppw, path_length, alpha, random.Random(rand.randint(0, 2**31)), file_))
+            args_list.append((G, ppw, path_length, alpha, random.Random(rand.randint(0, 2**31)), file_))
 
     with ProcessPoolExecutor(max_workers=num_workers) as executor:
         for file_ in executor.map(_write_walks_to_disk, args_list):
